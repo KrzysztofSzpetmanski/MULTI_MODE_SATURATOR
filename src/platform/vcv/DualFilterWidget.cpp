@@ -357,30 +357,30 @@ DualFilterWidget::DualFilterWidget(DualFilterModule* module) {
     addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
     addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-    auto* routingChoice = createWidget<RoutingChoice>(mm2px(Vec(17.5f, 15.5f)));
+    auto* routingChoice = createWidget<RoutingChoice>(mm2px(Vec(17.5f, 16.5f)));
     routingChoice->box.size = mm2px(Vec(30.0f, 7.0f));
     routingChoice->module = module;
     addChild(routingChoice);
 
-    auto* modelAChoice = createWidget<ModelChoice>(mm2px(Vec(14.0f, 26.5f)));
+    auto* modelAChoice = createWidget<ModelChoice>(mm2px(Vec(6.5f, 27.5f)));
     modelAChoice->box.size = mm2px(Vec(22.0f, 7.0f));
     modelAChoice->module = module;
     modelAChoice->paramId = DualFilterModule::MODEL_A_PARAM;
     addChild(modelAChoice);
 
-    auto* modelBChoice = createWidget<ModelChoice>(mm2px(Vec(29.0f, 26.5f)));
+    auto* modelBChoice = createWidget<ModelChoice>(mm2px(Vec(36.5f, 27.5f)));
     modelBChoice->box.size = mm2px(Vec(22.0f, 7.0f));
     modelBChoice->module = module;
     modelBChoice->paramId = DualFilterModule::MODEL_B_PARAM;
     addChild(modelBChoice);
 
-    auto* modeAChoice = createWidget<ModeChoice>(mm2px(Vec(14.0f, 35.5f)));
+    auto* modeAChoice = createWidget<ModeChoice>(mm2px(Vec(6.5f, 36.5f)));
     modeAChoice->box.size = mm2px(Vec(22.0f, 7.0f));
     modeAChoice->module = module;
     modeAChoice->slotA = true;
     addChild(modeAChoice);
 
-    auto* modeBChoice = createWidget<ModeChoice>(mm2px(Vec(29.0f, 35.5f)));
+    auto* modeBChoice = createWidget<ModeChoice>(mm2px(Vec(36.5f, 36.5f)));
     modeBChoice->box.size = mm2px(Vec(22.0f, 7.0f));
     modeBChoice->module = module;
     modeBChoice->slotA = false;
@@ -394,9 +394,9 @@ DualFilterWidget::DualFilterWidget(DualFilterModule* module) {
     const float col4 = 55.0f;
 
     const float rowCut = 54.0f;
-    const float rowRes = 64.0f;
-    const float rowDrv = 74.0f;
-    const float rowMix = 84.0f;
+    const float rowRes = 65.0f;
+    const float rowDrv = 76.0f;
+    const float rowMix = 87.0f;
 
     auto* aCutoffKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(col2, rowCut)), module, DualFilterModule::A_CUTOFF_PARAM);
     aCutoffKnob->moduleRef = module;
@@ -459,25 +459,23 @@ DualFilterWidget::DualFilterWidget(DualFilterModule* module) {
     addPanelLabel(32.5f, 8.0f, "DUAL FILTER LAB", 9, nvgRGB(0x0b, 0x12, 0x20));
     addPanelLabel(32.5f, 12.8f, rack::string::f("BUILD %d", DualFilterModule::kBuildNumber), 7, nvgRGB(0x1f, 0x29, 0x37));
 
-    addPanelLabel(25.0f, 34.5f, "MODEL A", 7);
-    addPanelLabel(40.0f, 34.5f, "MODEL B", 7);
-    addPanelLabel(25.0f, 43.5f, "MODE A", 7);
-    addPanelLabel(40.0f, 43.5f, "MODE B", 7);
+    addPanelLabel(10.0f, 22.5f, "A", 8);
+    addPanelLabel(55.0f, 22.5f, "B", 8);
 
-    addPanelLabel(col1, 48.0f, "A CUT CV", 6);
-    addPanelLabel(col2, 48.0f, "A CUT", 6);
-    addPanelLabel(col3, 48.0f, "B CUT", 6);
-    addPanelLabel(col4, 48.0f, "B CUT CV", 6);
+    addPanelLabel(col1, 49.0f, "A CUT CV", 6);
+    addPanelLabel(col2, 49.0f, "A CUT", 6);
+    addPanelLabel(col3, 49.0f, "B CUT", 6);
+    addPanelLabel(col4, 49.0f, "B CUT CV", 6);
 
-    addPanelLabel(col1, 58.0f, "A RES CV", 6);
-    addPanelLabel(col2, 58.0f, "A RES", 6);
-    addPanelLabel(col3, 58.0f, "B RES", 6);
-    addPanelLabel(col4, 58.0f, "B RES CV", 6);
+    addPanelLabel(col1, 60.0f, "A RES CV", 6);
+    addPanelLabel(col2, 60.0f, "A RES", 6);
+    addPanelLabel(col3, 60.0f, "B RES", 6);
+    addPanelLabel(col4, 60.0f, "B RES CV", 6);
 
-    addPanelLabel(col2, 68.0f, "A DRV", 6);
-    addPanelLabel(col3, 68.0f, "B DRV", 6);
-    addPanelLabel(col2, 78.0f, "A MIX", 6);
-    addPanelLabel(col3, 78.0f, "B MIX", 6);
+    addPanelLabel(col2, 71.0f, "A DRV", 6);
+    addPanelLabel(col3, 71.0f, "B DRV", 6);
+    addPanelLabel(col2, 82.0f, "A MIX", 6);
+    addPanelLabel(col3, 82.0f, "B MIX", 6);
 
     addPanelLabel(32.5f, 102.0f, "I/O", 7);
     addPanelLabel(col1, 116.0f, "IN A", 6);
