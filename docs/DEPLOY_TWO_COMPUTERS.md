@@ -17,6 +17,13 @@ Domyślne deploy path:
 - lokalnie: `~/Library/Application Support/Rack2/plugins-mac-arm64/MultiModeFilterLab`
 - big-mac: `/Volumes/music/Library/Application Support/Rack2/plugins-mac-arm64/MultiModeFilterLab`
 
+Jeśli `/Volumes/music` nie jest dostępne, użyj mount w katalogu użytkownika i nadpisz path:
+```bash
+mkdir -p "$HOME/Volumes/music"
+# mount_smbfs <twoj_smb_url> "$HOME/Volumes/music"
+make BIG_MAC_MOUNT_DIR="$HOME/Volumes/music" deploy-both
+```
+
 ## Workflow git
 Komputer A:
 ```bash
