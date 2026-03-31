@@ -13,6 +13,9 @@ git commit -m "Initial Multi Mode Filter Lab scaffold"
 gh repo create MULITI_MODE_FILTER --private --source . --remote origin --push
 ```
 
+Aktualny remote:
+- `https://github.com/KrzysztofSzpetmanski/MULITI_MODE_FILTER.git`
+
 ## Dalsza praca
 - pracuj na branchach `codex/...`,
 - po większych zmianach aktualizuj `docs/STATUS.md` i `docs/PROJECT_HANDOVER.md`.

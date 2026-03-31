@@ -2,7 +2,8 @@
 
 ## Data
 - Date: 2026-03-31
-- Branch: `main` (repo inicjalizowane w tym kroku)
+- Branch: `main`
+- Repo: `https://github.com/KrzysztofSzpetmanski/MULITI_MODE_FILTER`
 - Version: `2.0.007`
 - Build panel: `BUILD 7`
 
