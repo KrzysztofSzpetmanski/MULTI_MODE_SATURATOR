@@ -4,8 +4,8 @@
 - Date: 2026-03-31
 - Branch: `main`
 - Repo: `https://github.com/KrzysztofSzpetmanski/MULITI_MODE_FILTER`
-- Version: `2.0.011`
-- Build panel: `BUILD 11`
+- Version: `2.0.013`
+- Build panel: `BUILD 13`
 
 ## Co jest gotowe
 - DSP common + filtry:
@@ -36,7 +36,7 @@
 
 ## Ostatnia walidacja (2026-03-31)
 - `make -j4`: OK
-- `make dist`: OK (`dist/MultiModeFilterLab-2.0.011-mac-arm64.vcvplugin`)
+- `make dist`: OK (`dist/MultiModeFilterLab-2.0.013-mac-arm64.vcvplugin`)
 - `make install`: OK (lokalna instalacja Rack2)
 - `make deploy-both`:
   - local deploy: OK
