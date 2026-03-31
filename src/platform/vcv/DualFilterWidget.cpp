@@ -47,6 +47,25 @@ static std::vector<std::string> GetModeLabelsForModel(int modelIdx) {
     }
 }
 
+static std::array<std::string, 4> GetControlBaseLabelsForModel(int modelIdx) {
+    switch (modelIdx) {
+    case 0:
+        return {"OFF", "", "", ""};
+    case 1: // SVF
+        return {"CUT", "RES", "DRV", "MIX"};
+    case 2: // Trans ladder
+    case 3: // Diode ladder
+        return {"CUT", "RES", "DRV", "MIX"};
+    case 4: // LPG
+        return {"CTRL", "RESP", "DRV", "MIX"};
+    case 5: // Comb
+        return {"DLY", "FDBK", "DAMP", "MIX"};
+    case 6: // Biquad
+    default:
+        return {"CUT", "Q", "DRV", "MIX"};
+    }
+}
+
 struct PanelLabel : TransparentWidget {
     std::string text;
     int fontSize = 7;
@@ -63,6 +82,50 @@ struct PanelLabel : TransparentWidget {
         nvgFillColor(args.vg, color);
         nvgTextAlign(args.vg, align);
         nvgText(args.vg, 0.0f, 0.0f, text.c_str(), nullptr);
+    }
+};
+
+struct DynamicControlLabel : TransparentWidget {
+    mmf::platform::vcv::DualFilterModule* moduleRef = nullptr;
+    bool slotA = true;
+    int controlIndex = 0; // 0..3
+    bool cvLabel = false; // only meaningful for control 0/1
+    int fontSize = 6;
+    NVGcolor color = nvgRGB(0x0f, 0x17, 0x2a);
+
+    void draw(const DrawArgs& args) override {
+        if (controlIndex < 0 || controlIndex > 3) {
+            return;
+        }
+
+        int modelIdx = slotA ? 1 : 2; // fallback when module is null (module browser / preview path)
+        if (moduleRef) {
+            const int modelParam = slotA ? mmf::platform::vcv::DualFilterModule::MODEL_A_PARAM
+                                         : mmf::platform::vcv::DualFilterModule::MODEL_B_PARAM;
+            modelIdx = rack::math::clamp(
+                static_cast<int>(std::round(moduleRef->params[modelParam].getValue())),
+                0,
+                6);
+        }
+
+        const auto base = GetControlBaseLabelsForModel(modelIdx);
+        std::string label = base[controlIndex];
+        if (label.empty()) {
+            return;
+        }
+        if (cvLabel) {
+            label += " CV";
+        }
+
+        auto font = APP->window->loadFont(asset::system("res/fonts/DejaVuSans.ttf"));
+        if (!font) {
+            return;
+        }
+        nvgFontFaceId(args.vg, font->handle);
+        nvgFontSize(args.vg, static_cast<float>(fontSize));
+        nvgFillColor(args.vg, color);
+        nvgTextAlign(args.vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
+        nvgText(args.vg, 0.0f, 0.0f, label.c_str(), nullptr);
     }
 };
 
@@ -394,9 +457,9 @@ DualFilterWidget::DualFilterWidget(DualFilterModule* module) {
     const float col4 = 55.0f;
 
     const float rowCut = 54.0f;
-    const float rowRes = 65.0f;
-    const float rowDrv = 76.0f;
-    const float rowMix = 87.0f;
+    const float rowRes = 66.0f;
+    const float rowDrv = 78.0f;
+    const float rowMix = 90.0f;
 
     auto* aCutoffKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(col2, rowCut)), module, DualFilterModule::A_CUTOFF_PARAM);
     aCutoffKnob->moduleRef = module;
@@ -459,23 +522,33 @@ DualFilterWidget::DualFilterWidget(DualFilterModule* module) {
     addPanelLabel(32.5f, 8.0f, "DUAL FILTER LAB", 9, nvgRGB(0x0b, 0x12, 0x20));
     addPanelLabel(32.5f, 12.8f, rack::string::f("BUILD %d", DualFilterModule::kBuildNumber), 7, nvgRGB(0x1f, 0x29, 0x37));
 
-    addPanelLabel(10.0f, 22.5f, "A", 8);
-    addPanelLabel(55.0f, 22.5f, "B", 8);
+    addPanelLabel(10.0f, 22.5f, "A", 11);
+    addPanelLabel(55.0f, 22.5f, "B", 11);
 
-    addPanelLabel(col1, 49.0f, "A CUT CV", 6);
-    addPanelLabel(col2, 49.0f, "A CUT", 6);
-    addPanelLabel(col3, 49.0f, "B CUT", 6);
-    addPanelLabel(col4, 49.0f, "B CUT CV", 6);
+    auto addDynamicControlLabel = [this, module](float xMm, float yMm, bool slotA, int controlIndex, bool cvLabel, int size = 6) {
+        auto* l = createWidget<DynamicControlLabel>(mm2px(Vec(xMm, yMm)));
+        l->moduleRef = module;
+        l->slotA = slotA;
+        l->controlIndex = controlIndex;
+        l->cvLabel = cvLabel;
+        l->fontSize = size;
+        addChild(l);
+    };
 
-    addPanelLabel(col1, 60.0f, "A RES CV", 6);
-    addPanelLabel(col2, 60.0f, "A RES", 6);
-    addPanelLabel(col3, 60.0f, "B RES", 6);
-    addPanelLabel(col4, 60.0f, "B RES CV", 6);
+    addDynamicControlLabel(col1, 49.0f, true, 0, true, 6);
+    addDynamicControlLabel(col2, 49.0f, true, 0, false, 6);
+    addDynamicControlLabel(col3, 49.0f, false, 0, false, 6);
+    addDynamicControlLabel(col4, 49.0f, false, 0, true, 6);
 
-    addPanelLabel(col2, 71.0f, "A DRV", 6);
-    addPanelLabel(col3, 71.0f, "B DRV", 6);
-    addPanelLabel(col2, 82.0f, "A MIX", 6);
-    addPanelLabel(col3, 82.0f, "B MIX", 6);
+    addDynamicControlLabel(col1, 61.0f, true, 1, true, 6);
+    addDynamicControlLabel(col2, 61.0f, true, 1, false, 6);
+    addDynamicControlLabel(col3, 61.0f, false, 1, false, 6);
+    addDynamicControlLabel(col4, 61.0f, false, 1, true, 6);
+
+    addDynamicControlLabel(col2, 73.0f, true, 2, false, 6);
+    addDynamicControlLabel(col3, 73.0f, false, 2, false, 6);
+    addDynamicControlLabel(col2, 85.0f, true, 3, false, 6);
+    addDynamicControlLabel(col3, 85.0f, false, 3, false, 6);
 
     addPanelLabel(32.5f, 102.0f, "I/O", 7);
     addPanelLabel(col1, 116.0f, "IN A", 6);
