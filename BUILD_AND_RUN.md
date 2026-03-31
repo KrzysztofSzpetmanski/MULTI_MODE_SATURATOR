@@ -28,9 +28,9 @@ make deploy-both
 
 ## Smoke test
 1. Otwórz VCV Rack 2 i dodaj `Dual Filter Lab`.
-2. Podłącz sygnał do `IN`, odsłuch na `OUT`.
-3. Przełączaj `MODEL A`, `MODEL B`, `ROUTING`.
-4. Sprawdź `A->B`, `B->A`, `PARALLEL`.
+2. Podłącz sygnały do `IN A` i `IN B`, odsłuchuj `OUT A` i `OUT B`.
+3. Przełączaj listy `MODEL A`, `MODEL B`, `MODE A`, `MODE B`, `ROUTING`.
+4. Sprawdź `DUAL`, `SERIAL`, `PARALLEL`.
 5. Podłącz CV do `A CUT CV` i `A RES CV`; right-click na gałce i zmieniaj depth.
 6. Zweryfikuj LED wskaźniki modulacji i ring overlay na gałkach.
 

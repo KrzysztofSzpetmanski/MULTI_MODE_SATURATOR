@@ -9,7 +9,7 @@ namespace mmf::platform::vcv {
 
 class DualFilterModule : public rack::Module {
   public:
-    static constexpr int kBuildNumber = 7;
+    static constexpr int kBuildNumber = 9;
 
     enum ParamIds {
         MODEL_A_PARAM,
@@ -17,22 +17,18 @@ class DualFilterModule : public rack::Module {
         ROUTING_PARAM,
 
         A_BYPASS_PARAM,
+        A_MODE_PARAM,
         A_CUTOFF_PARAM,
         A_RESONANCE_PARAM,
         A_DRIVE_PARAM,
         A_MIX_PARAM,
-        A_MODE_PARAM,
-        A_P1_PARAM,
-        A_P2_PARAM,
 
         B_BYPASS_PARAM,
+        B_MODE_PARAM,
         B_CUTOFF_PARAM,
         B_RESONANCE_PARAM,
         B_DRIVE_PARAM,
         B_MIX_PARAM,
-        B_MODE_PARAM,
-        B_P1_PARAM,
-        B_P2_PARAM,
 
         A_CUTOFF_CV_DEPTH_PARAM,
         A_RESONANCE_CV_DEPTH_PARAM,
@@ -43,7 +39,9 @@ class DualFilterModule : public rack::Module {
     };
 
     enum InputIds {
-        AUDIO_IN_INPUT,
+        AUDIO_A_INPUT,
+        AUDIO_B_INPUT,
+
         A_CUTOFF_CV_INPUT,
         A_RESONANCE_CV_INPUT,
         B_CUTOFF_CV_INPUT,
@@ -52,7 +50,8 @@ class DualFilterModule : public rack::Module {
     };
 
     enum OutputIds {
-        AUDIO_OUT_OUTPUT,
+        AUDIO_A_OUTPUT,
+        AUDIO_B_OUTPUT,
         NUM_OUTPUTS
     };
 
@@ -72,10 +71,12 @@ class DualFilterModule : public rack::Module {
 
   private:
     static float ClampNorm(float x);
-    mmf::dsp::filters::FilterSlotParams BuildSlotParams(bool a);
+    static int ClampInt(int x, int minV, int maxV);
+
+    dsp::filters::FilterSlotParams BuildSlotParams(bool a);
     void SyncParamsFromUi();
 
-    mmf::dsp::engine::DualFilterEngine engine_;
+    dsp::engine::DualFilterEngine engine_;
     float lastSampleRate_ = 44100.0f;
     uint32_t frameCounter_ = 0;
 };

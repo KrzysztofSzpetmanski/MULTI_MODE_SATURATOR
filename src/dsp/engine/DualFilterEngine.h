@@ -16,6 +16,8 @@ class DualFilterEngine {
 
     void SetRouting(filters::FilterRouting routing);
     filters::FilterRouting GetRouting() const { return routing_; }
+    void SetEngineRouting(filters::EngineRoutingMode routingMode) { routingMode_ = routingMode; }
+    filters::EngineRoutingMode GetEngineRouting() const { return routingMode_; }
 
     void SetSlotModel(SlotId slot, filters::FilterModelType model);
     void SetSlotBypass(SlotId slot, bool bypass);
@@ -23,6 +25,7 @@ class DualFilterEngine {
 
     float ProcessSample(float x, int channel = 0);
     void ProcessFrame(float inL, float inR, float& outL, float& outR);
+    void ProcessDualFrame(float inA, float inB, float& outA, float& outB, int channel = 0);
 
   private:
     struct ChannelState {
@@ -35,6 +38,7 @@ class DualFilterEngine {
     float sampleRate_ = 48000.0f;
     int numChannels_ = 2;
     filters::FilterRouting routing_ = filters::FilterRouting::A_TO_B;
+    filters::EngineRoutingMode routingMode_ = filters::EngineRoutingMode::DUAL;
 
     filters::FilterModelType slotAModel_ = filters::FilterModelType::SVF;
     filters::FilterModelType slotBModel_ = filters::FilterModelType::TransistorLadder;

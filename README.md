@@ -9,8 +9,12 @@ Modularny system filtrów z architekturą warstwową:
 ## Co działa teraz
 - Filtry działające: `SVF`, `TransistorLadder`, `Comb`, `Biquad`.
 - Stuby pod dalszy rozwój: `DiodeLadder`, `LPG`.
-- Routing: `A->B`, `B->A`, `Parallel`.
+- Routing: `DUAL`, `SERIAL`, `PARALLEL`.
 - Testowy moduł VCV: `Dual Filter Lab`.
+- Layout I/O:
+  - osobne `IN A`, `IN B` po lewej,
+  - osobne `OUT A`, `OUT B` po prawej,
+  - CV dla obu modeli na dole panelu.
 - CV modulacja cutoff/resonance z:
   - ring indicator na gałce,
   - submenu głębokości CV (right-click),

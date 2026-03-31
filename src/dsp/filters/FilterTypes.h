@@ -17,6 +17,12 @@ enum class FilterRouting {
     PARALLEL = 2,
 };
 
+enum class EngineRoutingMode {
+    DUAL = 0,     // A in->A out, B in->B out
+    SERIAL = 1,   // A in->A slot->B slot, outA=tap after A, outB=after B
+    PARALLEL = 2, // A in feeds both slots, outA=A slot, outB=B slot
+};
+
 enum class SvfMode {
     LP = 0,
     HP = 1,

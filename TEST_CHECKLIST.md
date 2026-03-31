@@ -5,7 +5,7 @@
 - [ ] `TransistorLadder`: tapy 1/2/3/4 pole działają.
 - [ ] `Comb`: FF/FB/LP-FB działają i nie destabilizują się przy feedback ~0.9.
 - [ ] `Biquad`: LP/HP/BP/NOTCH/PEAK działają.
-- [ ] Routing: `A->B`, `B->A`, `PARALLEL` poprawny.
+- [ ] Routing: `DUAL`, `SERIAL`, `PARALLEL` poprawny.
 
 ## VCV UI
 - [ ] Zmiana modelu A/B w locie działa bez crash.

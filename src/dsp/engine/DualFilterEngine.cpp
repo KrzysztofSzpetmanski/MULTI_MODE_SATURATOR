@@ -84,4 +84,26 @@ void DualFilterEngine::ProcessFrame(float inL, float inR, float& outL, float& ou
     outR = ProcessSample(inR, numChannels_ > 1 ? 1 : 0);
 }
 
+void DualFilterEngine::ProcessDualFrame(float inA, float inB, float& outA, float& outB, int channel) {
+    const int chIndex = (channel <= 0 || numChannels_ == 1) ? 0 : 1;
+    auto& ch = channels_[chIndex];
+
+    switch (routingMode_) {
+    case filters::EngineRoutingMode::DUAL:
+        outA = ch.slotA.ProcessSample(inA);
+        outB = ch.slotB.ProcessSample(inB);
+        break;
+    case filters::EngineRoutingMode::SERIAL: {
+        const float a = ch.slotA.ProcessSample(inA);
+        outA = a;
+        outB = ch.slotB.ProcessSample(a);
+        break;
+    }
+    case filters::EngineRoutingMode::PARALLEL:
+        outA = ch.slotA.ProcessSample(inA);
+        outB = ch.slotB.ProcessSample(inA);
+        break;
+    }
+}
+
 } // namespace mmf::dsp::engine

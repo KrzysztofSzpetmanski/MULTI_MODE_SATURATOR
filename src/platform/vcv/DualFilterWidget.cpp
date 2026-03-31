@@ -4,20 +4,52 @@
 #include <array>
 #include <cmath>
 #include <string>
+#include <vector>
 
 namespace {
 
 using namespace rack;
 
-static constexpr std::array<int, 14> kDepthMenuSteps = {
+static const std::array<std::string, 6> kModelLabels = {
+    "SVF", "TRANS LAD", "DIODE LAD", "LPG", "COMB", "BIQUAD"
+};
+
+static const std::array<std::string, 3> kRoutingLabels = {
+    "DUAL", "SERIAL", "PARALLEL"
+};
+
+static const std::array<std::string, 4> kModeSvf = {"LP", "HP", "BP", "NOTCH"};
+static const std::array<std::string, 4> kModeLadder = {"1P", "2P", "3P", "4P"};
+static const std::array<std::string, 3> kModeLpg = {"LPG", "VCA", "LP"};
+static const std::array<std::string, 3> kModeComb = {"FF", "FB", "LP-FB"};
+static const std::array<std::string, 5> kModeBiquad = {"LP", "HP", "BP", "NOTCH", "PEAK"};
+
+static const std::array<int, 14> kDepthMenuSteps = {
     0, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100
 };
+
+static std::vector<std::string> GetModeLabelsForModel(int modelIdx) {
+    switch (modelIdx) {
+    case 0:
+        return {kModeSvf.begin(), kModeSvf.end()};
+    case 1:
+    case 2:
+        return {kModeLadder.begin(), kModeLadder.end()};
+    case 3:
+        return {kModeLpg.begin(), kModeLpg.end()};
+    case 4:
+        return {kModeComb.begin(), kModeComb.end()};
+    case 5:
+    default:
+        return {kModeBiquad.begin(), kModeBiquad.end()};
+    }
+}
 
 struct PanelLabel : TransparentWidget {
     std::string text;
     int fontSize = 8;
     int align = NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE;
-    NVGcolor color = nvgRGB(0xe5, 0xe7, 0xeb);
+    NVGcolor color = nvgRGB(0x0f, 0x17, 0x2a);
 
     void draw(const DrawArgs& args) override {
         auto font = APP->window->loadFont(asset::system("res/fonts/DejaVuSans.ttf"));
@@ -29,6 +61,117 @@ struct PanelLabel : TransparentWidget {
         nvgFillColor(args.vg, color);
         nvgTextAlign(args.vg, align);
         nvgText(args.vg, 0.0f, 0.0f, text.c_str(), nullptr);
+    }
+};
+
+struct ModelChoice : ui::ChoiceButton {
+    mmf::platform::vcv::DualFilterModule* module = nullptr;
+    int paramId = -1;
+
+    void step() override {
+        if (module && paramId >= 0) {
+            const int idx = rack::math::clamp(static_cast<int>(std::round(module->params[paramId].getValue())), 0, 5);
+            text = kModelLabels[idx];
+        }
+        ui::ChoiceButton::step();
+    }
+
+    void onAction(const event::Action& e) override {
+        ui::Menu* menu = createMenu();
+        menu->addChild(createMenuLabel("Model"));
+        for (int i = 0; i < static_cast<int>(kModelLabels.size()); ++i) {
+            menu->addChild(createCheckMenuItem(
+                kModelLabels[i],
+                "",
+                [=]() {
+                    return module && static_cast<int>(std::round(module->params[paramId].getValue())) == i;
+                },
+                [=]() {
+                    if (module) {
+                        module->params[paramId].setValue(static_cast<float>(i));
+                    }
+                }));
+        }
+        e.consume(this);
+    }
+};
+
+struct RoutingChoice : ui::ChoiceButton {
+    mmf::platform::vcv::DualFilterModule* module = nullptr;
+
+    void step() override {
+        if (module) {
+            const int idx = rack::math::clamp(static_cast<int>(std::round(module->params[mmf::platform::vcv::DualFilterModule::ROUTING_PARAM].getValue())), 0, 2);
+            text = kRoutingLabels[idx];
+        }
+        ui::ChoiceButton::step();
+    }
+
+    void onAction(const event::Action& e) override {
+        ui::Menu* menu = createMenu();
+        menu->addChild(createMenuLabel("Routing"));
+        for (int i = 0; i < static_cast<int>(kRoutingLabels.size()); ++i) {
+            menu->addChild(createCheckMenuItem(
+                kRoutingLabels[i],
+                "",
+                [=]() {
+                    return module && static_cast<int>(std::round(module->params[mmf::platform::vcv::DualFilterModule::ROUTING_PARAM].getValue())) == i;
+                },
+                [=]() {
+                    if (module) {
+                        module->params[mmf::platform::vcv::DualFilterModule::ROUTING_PARAM].setValue(static_cast<float>(i));
+                    }
+                }));
+        }
+        e.consume(this);
+    }
+};
+
+struct ModeChoice : ui::ChoiceButton {
+    mmf::platform::vcv::DualFilterModule* module = nullptr;
+    bool slotA = true;
+
+    int getModelParam() const {
+        return slotA ? mmf::platform::vcv::DualFilterModule::MODEL_A_PARAM : mmf::platform::vcv::DualFilterModule::MODEL_B_PARAM;
+    }
+
+    int getModeParam() const {
+        return slotA ? mmf::platform::vcv::DualFilterModule::A_MODE_PARAM : mmf::platform::vcv::DualFilterModule::B_MODE_PARAM;
+    }
+
+    void step() override {
+        if (module) {
+            const int modelIdx = rack::math::clamp(static_cast<int>(std::round(module->params[getModelParam()].getValue())), 0, 5);
+            const auto labels = GetModeLabelsForModel(modelIdx);
+            const int modeIdx = rack::math::clamp(static_cast<int>(std::round(module->params[getModeParam()].getValue())),
+                                                  0,
+                                                  static_cast<int>(labels.size()) - 1);
+            text = labels[modeIdx];
+        }
+        ui::ChoiceButton::step();
+    }
+
+    void onAction(const event::Action& e) override {
+        if (!module) {
+            return;
+        }
+
+        const int modelIdx = rack::math::clamp(static_cast<int>(std::round(module->params[getModelParam()].getValue())), 0, 5);
+        const auto labels = GetModeLabelsForModel(modelIdx);
+        ui::Menu* menu = createMenu();
+        menu->addChild(createMenuLabel(slotA ? "Mode A" : "Mode B"));
+        for (int i = 0; i < static_cast<int>(labels.size()); ++i) {
+            menu->addChild(createCheckMenuItem(
+                labels[i],
+                "",
+                [=]() {
+                    return static_cast<int>(std::round(module->params[getModeParam()].getValue())) == i;
+                },
+                [=]() {
+                    module->params[getModeParam()].setValue(static_cast<float>(i));
+                }));
+        }
+        e.consume(this);
     }
 };
 
@@ -110,8 +253,8 @@ struct CvDepthKnob : RoundSmallBlackKnob {
             nvgStroke(args.vg);
         };
 
-        drawTick(baseV, nvgRGBA(241, 245, 249, 230), 1.4f, 4.0f);
-        drawTick(modV, nvgRGBA(16, 185, 129, 240), 2.1f, 5.5f);
+        drawTick(baseV, nvgRGBA(15, 23, 42, 220), 1.5f, 4.2f);
+        drawTick(modV, nvgRGBA(16, 185, 129, 240), 2.2f, 5.8f);
     }
 
     void appendContextMenu(Menu* menu) override {
@@ -155,75 +298,97 @@ using namespace rack;
 
 DualFilterWidget::DualFilterWidget(DualFilterModule* module) {
     setModule(module);
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/DualFilter.svg")));
+    setPanel(createPanel(asset::plugin(pluginInstance, "res/DualFilter.svg")));
 
-    addChild(createWidget<ScrewSilver>(mm2px(Vec(2.0f, 2.0f))));
-    addChild(createWidget<ScrewSilver>(mm2px(Vec(2.0f, 112.0f))));
-    addChild(createWidget<ScrewSilver>(mm2px(Vec(58.0f, 2.0f))));
-    addChild(createWidget<ScrewSilver>(mm2px(Vec(58.0f, 112.0f))));
+    addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+    addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(10.0f, 16.0f)), module, DualFilterModule::MODEL_A_PARAM));
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(30.0f, 16.0f)), module, DualFilterModule::MODEL_B_PARAM));
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(50.0f, 16.0f)), module, DualFilterModule::ROUTING_PARAM));
+    auto* routingChoice = createWidget<RoutingChoice>(mm2px(Vec(16.0f, 16.0f)));
+    routingChoice->box.size = mm2px(Vec(28.0f, 8.0f));
+    routingChoice->module = module;
+    addChild(routingChoice);
 
-    addParam(createParamCentered<CKSS>(mm2px(Vec(10.0f, 28.0f)), module, DualFilterModule::A_BYPASS_PARAM));
+    auto* modelAChoice = createWidget<ModelChoice>(mm2px(Vec(2.5f, 27.5f)));
+    modelAChoice->box.size = mm2px(Vec(25.0f, 8.0f));
+    modelAChoice->module = module;
+    modelAChoice->paramId = DualFilterModule::MODEL_A_PARAM;
+    addChild(modelAChoice);
 
-    auto* aCutoffKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(10.0f, 40.0f)), module, DualFilterModule::A_CUTOFF_PARAM);
+    auto* modeAChoice = createWidget<ModeChoice>(mm2px(Vec(2.5f, 37.5f)));
+    modeAChoice->box.size = mm2px(Vec(25.0f, 8.0f));
+    modeAChoice->module = module;
+    modeAChoice->slotA = true;
+    addChild(modeAChoice);
+
+    auto* modelBChoice = createWidget<ModelChoice>(mm2px(Vec(32.5f, 27.5f)));
+    modelBChoice->box.size = mm2px(Vec(25.0f, 8.0f));
+    modelBChoice->module = module;
+    modelBChoice->paramId = DualFilterModule::MODEL_B_PARAM;
+    addChild(modelBChoice);
+
+    auto* modeBChoice = createWidget<ModeChoice>(mm2px(Vec(32.5f, 37.5f)));
+    modeBChoice->box.size = mm2px(Vec(25.0f, 8.0f));
+    modeBChoice->module = module;
+    modeBChoice->slotA = false;
+    addChild(modeBChoice);
+
+    addParam(createParamCentered<CKSS>(mm2px(Vec(8.0f, 50.0f)), module, DualFilterModule::A_BYPASS_PARAM));
+
+    auto* aCutoffKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(15.0f, 50.0f)), module, DualFilterModule::A_CUTOFF_PARAM);
     aCutoffKnob->moduleRef = module;
     aCutoffKnob->depthParam = DualFilterModule::A_CUTOFF_CV_DEPTH_PARAM;
     aCutoffKnob->cvInput = DualFilterModule::A_CUTOFF_CV_INPUT;
     aCutoffKnob->depthMenuLabel = "A CUTOFF CV depth";
     addParam(aCutoffKnob);
 
-    auto* aResKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(10.0f, 52.0f)), module, DualFilterModule::A_RESONANCE_PARAM);
+    auto* aResKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(15.0f, 63.0f)), module, DualFilterModule::A_RESONANCE_PARAM);
     aResKnob->moduleRef = module;
     aResKnob->depthParam = DualFilterModule::A_RESONANCE_CV_DEPTH_PARAM;
     aResKnob->cvInput = DualFilterModule::A_RESONANCE_CV_INPUT;
     aResKnob->depthMenuLabel = "A RESONANCE CV depth";
     addParam(aResKnob);
 
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(10.0f, 64.0f)), module, DualFilterModule::A_DRIVE_PARAM));
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(10.0f, 76.0f)), module, DualFilterModule::A_MIX_PARAM));
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(10.0f, 88.0f)), module, DualFilterModule::A_MODE_PARAM));
-    addParam(createParamCentered<Trimpot>(mm2px(Vec(10.0f, 98.0f)), module, DualFilterModule::A_P1_PARAM));
-    addParam(createParamCentered<Trimpot>(mm2px(Vec(10.0f, 106.0f)), module, DualFilterModule::A_P2_PARAM));
+    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(15.0f, 76.0f)), module, DualFilterModule::A_DRIVE_PARAM));
+    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(15.0f, 89.0f)), module, DualFilterModule::A_MIX_PARAM));
 
-    addParam(createParamCentered<CKSS>(mm2px(Vec(30.0f, 28.0f)), module, DualFilterModule::B_BYPASS_PARAM));
+    addParam(createParamCentered<CKSS>(mm2px(Vec(31.0f, 50.0f)), module, DualFilterModule::B_BYPASS_PARAM));
 
-    auto* bCutoffKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(30.0f, 40.0f)), module, DualFilterModule::B_CUTOFF_PARAM);
+    auto* bCutoffKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(38.0f, 50.0f)), module, DualFilterModule::B_CUTOFF_PARAM);
     bCutoffKnob->moduleRef = module;
     bCutoffKnob->depthParam = DualFilterModule::B_CUTOFF_CV_DEPTH_PARAM;
     bCutoffKnob->cvInput = DualFilterModule::B_CUTOFF_CV_INPUT;
     bCutoffKnob->depthMenuLabel = "B CUTOFF CV depth";
     addParam(bCutoffKnob);
 
-    auto* bResKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(30.0f, 52.0f)), module, DualFilterModule::B_RESONANCE_PARAM);
+    auto* bResKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(38.0f, 63.0f)), module, DualFilterModule::B_RESONANCE_PARAM);
     bResKnob->moduleRef = module;
     bResKnob->depthParam = DualFilterModule::B_RESONANCE_CV_DEPTH_PARAM;
     bResKnob->cvInput = DualFilterModule::B_RESONANCE_CV_INPUT;
     bResKnob->depthMenuLabel = "B RESONANCE CV depth";
     addParam(bResKnob);
 
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(30.0f, 64.0f)), module, DualFilterModule::B_DRIVE_PARAM));
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(30.0f, 76.0f)), module, DualFilterModule::B_MIX_PARAM));
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(30.0f, 88.0f)), module, DualFilterModule::B_MODE_PARAM));
-    addParam(createParamCentered<Trimpot>(mm2px(Vec(30.0f, 98.0f)), module, DualFilterModule::B_P1_PARAM));
-    addParam(createParamCentered<Trimpot>(mm2px(Vec(30.0f, 106.0f)), module, DualFilterModule::B_P2_PARAM));
+    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(38.0f, 76.0f)), module, DualFilterModule::B_DRIVE_PARAM));
+    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(38.0f, 89.0f)), module, DualFilterModule::B_MIX_PARAM));
 
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(50.0f, 40.0f)), module, DualFilterModule::AUDIO_IN_INPUT));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(50.0f, 54.0f)), module, DualFilterModule::A_CUTOFF_CV_INPUT));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(50.0f, 66.0f)), module, DualFilterModule::A_RESONANCE_CV_INPUT));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(50.0f, 78.0f)), module, DualFilterModule::B_CUTOFF_CV_INPUT));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(50.0f, 90.0f)), module, DualFilterModule::B_RESONANCE_CV_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(6.5f, 83.0f)), module, DualFilterModule::AUDIO_A_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(6.5f, 96.0f)), module, DualFilterModule::AUDIO_B_INPUT));
 
-    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(50.0f, 106.0f)), module, DualFilterModule::AUDIO_OUT_OUTPUT));
+    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(53.5f, 83.0f)), module, DualFilterModule::AUDIO_A_OUTPUT));
+    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(53.5f, 96.0f)), module, DualFilterModule::AUDIO_B_OUTPUT));
 
-    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(54.0f, 54.0f)), module, DualFilterModule::A_CUTOFF_MOD_LIGHT));
-    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(54.0f, 66.0f)), module, DualFilterModule::A_RESONANCE_MOD_LIGHT));
-    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(54.0f, 78.0f)), module, DualFilterModule::B_CUTOFF_MOD_LIGHT));
-    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(54.0f, 90.0f)), module, DualFilterModule::B_RESONANCE_MOD_LIGHT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(15.0f, 109.0f)), module, DualFilterModule::A_CUTOFF_CV_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(25.0f, 109.0f)), module, DualFilterModule::A_RESONANCE_CV_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(35.0f, 109.0f)), module, DualFilterModule::B_CUTOFF_CV_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(45.0f, 109.0f)), module, DualFilterModule::B_RESONANCE_CV_INPUT));
 
-    auto addPanelLabel = [this](float xMm, float yMm, const std::string& txt, int size = 7, NVGcolor color = nvgRGB(0xe5, 0xe7, 0xeb)) {
+    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(15.0f, 103.5f)), module, DualFilterModule::A_CUTOFF_MOD_LIGHT));
+    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(25.0f, 103.5f)), module, DualFilterModule::A_RESONANCE_MOD_LIGHT));
+    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(35.0f, 103.5f)), module, DualFilterModule::B_CUTOFF_MOD_LIGHT));
+    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(45.0f, 103.5f)), module, DualFilterModule::B_RESONANCE_MOD_LIGHT));
+
+    auto addPanelLabel = [this](float xMm, float yMm, const std::string& txt, int size = 8, NVGcolor color = nvgRGB(0x0f, 0x17, 0x2a)) {
         auto* l = createWidget<PanelLabel>(mm2px(Vec(xMm, yMm)));
         l->text = txt;
         l->fontSize = size;
@@ -231,37 +396,37 @@ DualFilterWidget::DualFilterWidget(DualFilterModule* module) {
         addChild(l);
     };
 
-    addPanelLabel(30.0f, 9.0f, "DUAL FILTER LAB", 9, nvgRGB(0xf8, 0xfa, 0xfc));
-    addPanelLabel(50.0f, 12.8f, rack::string::f("BUILD %d", DualFilterModule::kBuildNumber), 7, nvgRGB(0x93, 0xc5, 0xfd));
+    addPanelLabel(30.0f, 8.0f, "DUAL FILTER LAB", 9, nvgRGB(0x0b, 0x12, 0x20));
+    addPanelLabel(30.0f, 12.8f, rack::string::f("BUILD %d", DualFilterModule::kBuildNumber), 7, nvgRGB(0x1f, 0x29, 0x37));
 
-    addPanelLabel(10.0f, 23.0f, "MODEL A", 6);
-    addPanelLabel(30.0f, 23.0f, "MODEL B", 6);
-    addPanelLabel(50.0f, 23.0f, "ROUTING", 6);
+    addPanelLabel(30.0f, 24.0f, "ROUTING", 7);
+    addPanelLabel(15.0f, 35.0f, "MODEL A", 7);
+    addPanelLabel(15.0f, 45.0f, "MODE A", 7);
+    addPanelLabel(38.0f, 35.0f, "MODEL B", 7);
+    addPanelLabel(38.0f, 45.0f, "MODE B", 7);
 
-    addPanelLabel(10.0f, 34.0f, "A BYP", 6);
-    addPanelLabel(10.0f, 37.0f, "CUT", 6);
-    addPanelLabel(10.0f, 49.0f, "RES", 6);
-    addPanelLabel(10.0f, 61.0f, "DRV", 6);
-    addPanelLabel(10.0f, 73.0f, "MIX", 6);
-    addPanelLabel(10.0f, 85.0f, "MODE", 6);
-    addPanelLabel(10.0f, 95.0f, "P1", 6);
-    addPanelLabel(10.0f, 103.0f, "P2", 6);
+    addPanelLabel(8.0f, 56.0f, "BYP", 6);
+    addPanelLabel(15.0f, 56.0f, "CUT", 7);
+    addPanelLabel(15.0f, 69.0f, "RES", 7);
+    addPanelLabel(15.0f, 82.0f, "DRV", 7);
+    addPanelLabel(15.0f, 95.0f, "MIX", 7);
 
-    addPanelLabel(30.0f, 34.0f, "B BYP", 6);
-    addPanelLabel(30.0f, 37.0f, "CUT", 6);
-    addPanelLabel(30.0f, 49.0f, "RES", 6);
-    addPanelLabel(30.0f, 61.0f, "DRV", 6);
-    addPanelLabel(30.0f, 73.0f, "MIX", 6);
-    addPanelLabel(30.0f, 85.0f, "MODE", 6);
-    addPanelLabel(30.0f, 95.0f, "P1", 6);
-    addPanelLabel(30.0f, 103.0f, "P2", 6);
+    addPanelLabel(31.0f, 56.0f, "BYP", 6);
+    addPanelLabel(38.0f, 56.0f, "CUT", 7);
+    addPanelLabel(38.0f, 69.0f, "RES", 7);
+    addPanelLabel(38.0f, 82.0f, "DRV", 7);
+    addPanelLabel(38.0f, 95.0f, "MIX", 7);
 
-    addPanelLabel(50.0f, 34.0f, "IN", 6);
-    addPanelLabel(50.0f, 48.0f, "A CUT CV", 6);
-    addPanelLabel(50.0f, 60.0f, "A RES CV", 6);
-    addPanelLabel(50.0f, 72.0f, "B CUT CV", 6);
-    addPanelLabel(50.0f, 84.0f, "B RES CV", 6);
-    addPanelLabel(50.0f, 100.0f, "OUT", 6);
+    addPanelLabel(6.5f, 76.0f, "IN A", 6);
+    addPanelLabel(6.5f, 89.0f, "IN B", 6);
+    addPanelLabel(53.5f, 76.0f, "OUT A", 6);
+    addPanelLabel(53.5f, 89.0f, "OUT B", 6);
+
+    addPanelLabel(30.0f, 99.0f, "CV INPUTS", 7);
+    addPanelLabel(15.0f, 116.0f, "A CUT", 6);
+    addPanelLabel(25.0f, 116.0f, "A RES", 6);
+    addPanelLabel(35.0f, 116.0f, "B CUT", 6);
+    addPanelLabel(45.0f, 116.0f, "B RES", 6);
 }
 
 } // namespace mmf::platform::vcv
