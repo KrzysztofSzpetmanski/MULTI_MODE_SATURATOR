@@ -4,8 +4,8 @@
 - Date: 2026-03-31
 - Branch: `main`
 - Repo: `https://github.com/KrzysztofSzpetmanski/MULITI_MODE_FILTER`
-- Version: `2.0.009`
-- Build panel: `BUILD 9`
+- Version: `2.0.010`
+- Build panel: `BUILD 10`
 
 ## Co jest gotowe
 - DSP common + filtry:
@@ -18,6 +18,7 @@
   - wybór modeli A/B jako listy rozwijane
   - wybór mode A/B jako listy rozwijane (dynamiczne per model)
   - routing jako lista rozwijana `DUAL/SERIAL/PARALLEL`
+  - `SERIAL/PARALLEL`: oba wejścia akceptowane bez zgadywania (`IN A`, `IN B`, lub oba), oba wyjścia klonowane
   - osobne `IN A/B` i `OUT A/B`
   - CV wejścia obu modeli na dole panelu
   - CV modulacja cutoff/resonance dla A/B
@@ -34,7 +35,7 @@
 
 ## Ostatnia walidacja (2026-03-31)
 - `make -j4`: OK
-- `make dist`: OK (`dist/MultiModeFilterLab-2.0.009-mac-arm64.vcvplugin`)
+- `make dist`: OK (`dist/MultiModeFilterLab-2.0.010-mac-arm64.vcvplugin`)
 - `make install`: OK (lokalna instalacja Rack2)
 - `make deploy-both`:
   - local deploy: OK

@@ -95,14 +95,21 @@ void DualFilterEngine::ProcessDualFrame(float inA, float inB, float& outA, float
         break;
     case filters::EngineRoutingMode::SERIAL: {
         const float a = ch.slotA.ProcessSample(inA);
-        outA = a;
-        outB = ch.slotB.ProcessSample(a);
+        const float y = ch.slotB.ProcessSample(a);
+        // In SERIAL mode both outputs are mirrored for patching convenience.
+        outA = y;
+        outB = y;
         break;
     }
-    case filters::EngineRoutingMode::PARALLEL:
-        outA = ch.slotA.ProcessSample(inA);
-        outB = ch.slotB.ProcessSample(inA);
+    case filters::EngineRoutingMode::PARALLEL: {
+        const float yA = ch.slotA.ProcessSample(inA);
+        const float yB = ch.slotB.ProcessSample(inB);
+        const float y = 0.5f * (yA + yB);
+        // In PARALLEL mode both outputs are mirrored for patching convenience.
+        outA = y;
+        outB = y;
         break;
+    }
     }
 }
 

@@ -60,12 +60,33 @@ void DualFilterModule::process(const ProcessArgs& args) {
         SyncParamsFromUi();
     }
 
-    const float inA = inputs[AUDIO_A_INPUT].isConnected() ? (inputs[AUDIO_A_INPUT].getVoltage() * 0.2f) : 0.0f;
-    const float inB = inputs[AUDIO_B_INPUT].isConnected() ? (inputs[AUDIO_B_INPUT].getVoltage() * 0.2f) : 0.0f;
+    const bool inAConnected = inputs[AUDIO_A_INPUT].isConnected();
+    const bool inBConnected = inputs[AUDIO_B_INPUT].isConnected();
+    const float inA = inAConnected ? (inputs[AUDIO_A_INPUT].getVoltage() * 0.2f) : 0.0f;
+    const float inB = inBConnected ? (inputs[AUDIO_B_INPUT].getVoltage() * 0.2f) : 0.0f;
 
     float outA = 0.0f;
     float outB = 0.0f;
-    engine_.ProcessDualFrame(inA, inB, outA, outB, 0);
+    const auto routingMode = static_cast<dsp::filters::EngineRoutingMode>(
+        ClampInt(static_cast<int>(std::round(params[ROUTING_PARAM].getValue())), 0, 2));
+
+    if (routingMode == dsp::filters::EngineRoutingMode::DUAL) {
+        engine_.ProcessDualFrame(inA, inB, outA, outB, 0);
+    } else {
+        // SERIAL/PARALLEL convenience mode:
+        // - user can plug signal into A or B (or both),
+        // - engine receives a merged input,
+        // - outputs are mirrored in engine.
+        float mergedIn = 0.0f;
+        if (inAConnected && inBConnected) {
+            mergedIn = 0.5f * (inA + inB);
+        } else if (inAConnected) {
+            mergedIn = inA;
+        } else if (inBConnected) {
+            mergedIn = inB;
+        }
+        engine_.ProcessDualFrame(mergedIn, mergedIn, outA, outB, 0);
+    }
 
     outputs[AUDIO_A_OUTPUT].setVoltage(5.0f * outA);
     outputs[AUDIO_B_OUTPUT].setVoltage(5.0f * outB);

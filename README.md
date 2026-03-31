@@ -10,6 +10,9 @@ Modularny system filtrów z architekturą warstwową:
 - Filtry działające: `SVF`, `TransistorLadder`, `Comb`, `Biquad`.
 - Stuby pod dalszy rozwój: `DiodeLadder`, `LPG`.
 - Routing: `DUAL`, `SERIAL`, `PARALLEL`.
+- `SERIAL` i `PARALLEL`:
+  - biorą sygnał z `IN A` lub `IN B` (albo merge obu),
+  - dają sklonowany wynik na `OUT A` i `OUT B`.
 - Testowy moduł VCV: `Dual Filter Lab`.
 - Layout I/O:
   - osobne `IN A`, `IN B` po lewej,
