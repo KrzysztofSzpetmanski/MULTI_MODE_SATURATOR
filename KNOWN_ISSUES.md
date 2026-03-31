@@ -1,6 +1,10 @@
 # Known Issues
 
-1. `DiodeLadder` i `LPG` to aktualnie scaffold (grają, ale to nie finalny charakter).
-2. Moduł VCV jest celowo uproszczony (mono tor testowy).
-3. Mapowanie parametrów model-specyficznych (`p1..p4`) jest techniczne, nie finalne UX.
-4. Panel SVG jest minimalistyczny; większość opisów jest rysowana kodem widgetu.
+## Aktualnie
+- Projekt jest na etapie skeleton, więc funkcjonalność saturatora jest jeszcze niezaimplementowana docelowo.
+- Nazewnictwo części plików/klas może jeszcze odzwierciedlać bazę filtrową.
+
+## Plan
+- sukcesywna migracja nazw i modeli pod domenę saturacji,
+- dopracowanie mapowania parametrów per tryb saturatora,
+- odsłuch i tuning brzmieniowy.

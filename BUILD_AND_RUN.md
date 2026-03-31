@@ -1,40 +1,27 @@
 # Build And Run
 
+## Status
+Instrukcja dotyczy etapu **skeleton** dla nowego projektu saturatora.
+
 ## Build
 ```bash
-cd /Users/lazuli/Documents/PROGRAMMING/VCV_PROGRAMMING/MULITI_MODE_FILTER
 make -j4
 ```
 
-## Package
+## Dist
 ```bash
 make dist
 ```
 
-Artefakty:
-- `plugin.dylib`
-- `dist/MultiModeFilterLab/`
-- `dist/MultiModeFilterLab-2.0.xxx-<platform>.vcvplugin`
-
-## Install lokalnie do Rack2
+## Install lokalnie do Rack
 ```bash
 make install
 ```
 
-## Deploy na dwa komputery
+## Deploy na dwa komputery (jeśli workflow skonfigurowany)
 ```bash
 make deploy-both
 ```
 
-## Smoke test
-1. Otwórz VCV Rack 2 i dodaj `Dual Filter Lab`.
-2. Podłącz sygnały do `IN A` i `IN B`, odsłuchuj `OUT A` i `OUT B`.
-3. Przełączaj listy `MODEL A`, `MODEL B`, `MODE A`, `MODE B`, `ROUTING`.
-4. Sprawdź `DUAL`, `SERIAL`, `PARALLEL`.
-5. Podłącz CV do `A CUT CV` i `A RES CV`; right-click na gałce i zmieniaj depth.
-6. Zweryfikuj LED wskaźniki modulacji i ring overlay na gałkach.
-
-## Clean
-```bash
-make clean
-```
+## Uwaga
+Kod DSP saturatora jest w trakcie tworzenia. Aktualnie środowisko służy jako stabilny punkt startowy.

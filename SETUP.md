@@ -1,24 +1,13 @@
 # Setup
 
-## Cel
-Przygotowanie środowiska dla pluginu VCV Rack 2: `MultiModeFilterLab`.
+## Cel setupu
+Szybko uruchomić środowisko robocze dla projektu **MULTI_MODE_SATURATOR**.
 
 ## Wymagania
-- macOS/Linux shell
-- `git`
-- `make`
-- kompilator C++17
-- VCV Rack SDK (`RACK_DIR`)
+- VCV Rack SDK 2.x,
+- C++17 toolchain,
+- lokalny Rack 2,
+- opcjonalnie montowanie udziału `/Volumes/music` do deployu na Big Mac.
 
-## Ścieżki
-Workspace:
-- `/Users/lazuli/Documents/PROGRAMMING/VCV_PROGRAMMING/MULITI_MODE_FILTER`
-
-Makefile próbuje kolejno:
-1. `../Rack-SDK`
-2. `/Users/lazuli/Documents/PROGRAMMING/TEENSY/KSZ_TEENSY_PLATFORMIO/Teensy_Chord_Gen/Rack-SDK`
-
-Możesz nadpisać:
-```bash
-make -j4 RACK_DIR=/absolute/path/to/Rack-SDK
-```
+## Stan projektu
+To repo jest na etapie **startowego szkieletu**. Pliki i workflow są gotowe do dalszego developmentu saturatora.

@@ -1,27 +1,20 @@
-# Architecture
+# Architecture (Start Skeleton)
 
-## Warstwy
-1. `src/dsp/common`
-- Narzędzia DSP (math, smoothing, saturacja, delay, dc block).
+## Cel
+Budujemy nowy moduł: **Multi Mode Saturator**.
 
-2. `src/dsp/filters`
-- Niezależne modele filtrów, sample-by-sample, bez zależności VCV/Daisy.
+## Obecny stan
+Obecny kod to szkielet pochodzący z projektu dual-filter, użyty jako baza infrastrukturalna.
 
-3. `src/dsp/engine`
-- `DualFilterEngine`: slot A/B, bypass per slot, routing serial/parallel.
+## Warstwy (docelowo)
+- `src/dsp/common` - utility DSP (smoothers, math, saturatory pomocnicze).
+- `src/dsp/models` / `src/dsp/filters` - modele saturacji (do migracji nazewnictwa w kolejnych krokach).
+- `src/dsp/engine` - runtime, sloty modeli, routing i mapowanie parametrów.
+- `src/platform/vcv` - moduł testowy Rack.
+- `src/platform/daisy` - adapter pod `AudioCallback`.
 
-4. `src/platform/vcv`
-- Moduł testowy do odsłuchu i strojenia.
+## Założenie projektowe
+Nie robimy „jednego super saturatora”, tylko zestaw wyspecjalizowanych modeli.
 
-5. `src/platform/daisy`
-- Adapter pokazujący użycie engine w callbacku audio.
-
-## Główne założenia
-- Brak dynamicznej alokacji w ścieżce audio.
-- DSP core przenośny między VCV i Daisy.
-- Minimalne abstrahowanie w hot-path (dispatch po `switch`, bez virtuali w process).
-
-## Rozszerzenia zaplanowane
-- Lepsze modele `DiodeLadder` i `LPG`.
-- Refinement tuning/resonance ladderów.
-- Opcjonalny oversampling dla cięższych nieliniowości.
+## Status
+Architektura jest gotowa jako **szkielet**, modelowanie saturatora dopiero się rozpoczyna.

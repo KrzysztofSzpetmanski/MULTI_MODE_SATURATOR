@@ -1,48 +1,19 @@
-# MULITI_MODE_FILTER - Status
+# STATUS
 
-## Data
-- Date: 2026-03-31
-- Branch: `main`
-- Repo: `https://github.com/KrzysztofSzpetmanski/MULITI_MODE_FILTER`
-- Version: `2.0.014`
-- Build panel: `BUILD 14`
+## Projekt
+MULTI_MODE_SATURATOR
 
-## Co jest gotowe
-- DSP common + filtry:
-  - `SVF` (TPT), `TransistorLadder`, `Comb`, `Biquad`
-  - `DiodeLadder` scaffold
-  - `LPG` scaffold
-- Runtime:
-  - `DualFilterEngine` (slot A/B, bypass per slot, routing `DUAL`, `SERIAL`, `PARALLEL`)
-- VCV test module:
-  - wybór modeli A/B jako listy rozwijane
-  - `MODEL=OFF` zastępuje dawny bypass switch
-  - wybór mode A/B jako listy rozwijane (dynamiczne per model)
-  - routing jako lista rozwijana `DUAL/SERIAL/PARALLEL`
-  - `SERIAL/PARALLEL`: oba wejścia akceptowane bez zgadywania (`IN A`, `IN B`, lub oba), oba wyjścia klonowane
-  - osobne `IN A/B` i `OUT A/B`
-  - CV wejścia obu modeli na dole panelu
-  - CV modulacja cutoff/resonance dla A/B
-  - visual modulation ring na gałkach
-  - submenu głębokości CV (right-click)
-  - LED wskaźniki modulacji
-- Daisy adapter:
-  - `src/platform/daisy/DaisyAdapter.*`
+## Etap
+START / SKELETON
 
-## Co jest teraz priorytetem
-1. Strojenie charakteru modeli pod odsłuch.
-2. Dopracowanie `LPG` i `DiodeLadder` z prostego scaffold do wersji muzycznej.
-3. Opcjonalny stereo wrapper w module VCV (na razie moduł testowy jest mono).
+## Aktualny stan
+- kod i struktura sklonowane z działającej bazy,
+- workflow build/deploy dostępny,
+- dokumentacja ustawiona pod nowy kontekst saturatora,
+- implementacja właściwych modeli saturacji: **do rozpoczęcia**.
 
-## Ostatnia walidacja (2026-03-31)
-- `make -j4`: OK
-- `make dist`: OK (`dist/MultiModeFilterLab-2.0.014-mac-arm64.vcvplugin`)
-- `make install`: OK (lokalna instalacja Rack2)
-- `make deploy-both`:
-  - local deploy: OK
-  - big-mac deploy: OK (`/Volumes/music` zamontowane)
-
-## Otwarty dług techniczny
-- Lepsze mapowanie model-specyficznych parametrów niż `p1..p4`.
-- Oversampling switch dla mocniejszych nieliniowości.
-- Dodatkowe testy regresji dla stability przy szybkiej modulacji.
+## Najbliższe kroki
+1. Zdefiniować listę trybów saturatora (np. soft, hard, asym, tape-ish, diode-ish).
+2. Zdefiniować wspólne i model-specyficzne parametry.
+3. Dodać pierwszy działający model saturacji.
+4. Spiąć mapowanie parametrów i odsłuch w VCV.

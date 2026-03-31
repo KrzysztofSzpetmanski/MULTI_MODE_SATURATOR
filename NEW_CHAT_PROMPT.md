@@ -1,23 +1,14 @@
-# Prompt Startowy Do Nowego Czatu
+# New Chat Prompt
 
-Pracujemy w:
-- `/Users/lazuli/Documents/PROGRAMMING/VCV_PROGRAMMING/MULITI_MODE_FILTER`
+Pracujemy na projekcie **MULTI_MODE_SATURATOR**.
 
-Cel projektu:
-- Modularny system filtrów (DSP core -> runtime -> VCV test), przygotowany pod późniejszy port na Daisy Seed.
+Kontekst:
+- Repo jest na etapie **startowego szkieletu**.
+- Baza została sklonowana z działającego projektu o podobnej architekturze.
+- Celem jest budowa modułu saturatora z wieloma trybami i różnymi parametrami.
 
-Zanim cokolwiek zmienisz, przeczytaj:
-1. `README.md`
-2. `ARCHITECTURE.md`
-3. `docs/STATUS.md`
-4. `docs/PROJECT_HANDOVER.md`
-
-Aktualne zasady workflow:
-- Wersja pluginu to zawsze `2.0.xxx` i rośnie automatycznie przez `scripts/bump_build.sh`.
-- Build/deploy komendy są w `BUILD_AND_RUN.md`.
-- Po każdej większej zmianie aktualizuj `docs/STATUS.md` i `docs/PROJECT_HANDOVER.md`.
-
-Wynik pracy w odpowiedzi:
-1. Lista zmienionych plików.
-2. Co działa po zmianie.
-3. Jak uruchomić build/test/deploy.
+Zasady:
+- zmiany minimalnie inwazyjne,
+- brak dynamicznej alokacji w audio path,
+- DSP core niezależny od GUI i hardware,
+- kod gotowy do testu w VCV i późniejszego użycia na Daisy.
