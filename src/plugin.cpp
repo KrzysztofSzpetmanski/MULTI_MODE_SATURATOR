@@ -4,5 +4,5 @@ rack::Plugin* pluginInstance = nullptr;
 
 void init(rack::Plugin* p) {
     pluginInstance = p;
-    p->addModel(modelDualFilter);
+    p->addModel(modelDualSaturation);
 }

@@ -3,4 +3,4 @@
 #include <rack.hpp>
 
 extern rack::Plugin* pluginInstance;
-extern rack::Model* modelDualFilter;
+extern rack::Model* modelDualSaturation;

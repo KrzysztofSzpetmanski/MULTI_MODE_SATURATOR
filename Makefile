@@ -3,7 +3,7 @@ ifeq ("$(wildcard $(RACK_DIR)/plugin.mk)","")
 RACK_DIR := /Users/lazuli/Documents/PROGRAMMING/TEENSY/KSZ_TEENSY_PLATFORMIO/Teensy_Chord_Gen/Rack-SDK
 endif
 
-PLUGIN_SLUG := MultiModeFilterLab
+PLUGIN_SLUG := MultiModeSaturatorLab
 LOCAL_RACK_PLUGIN_DIR ?= $(HOME)/Library/Application Support/Rack2/plugins-mac-arm64
 BIG_MAC_MOUNT_DIR ?= /Volumes/music
 BIG_MAC_RACK_SUBDIR ?= Library/Application Support/Rack2/plugins-mac-arm64
@@ -30,19 +30,14 @@ endif
 FLAGS += -std=c++17
 
 SOURCES += src/plugin.cpp
-SOURCES += src/platform/vcv/DualFilterModule.cpp
-SOURCES += src/platform/vcv/DualFilterWidget.cpp
-SOURCES += src/dsp/engine/FilterSlot.cpp
-SOURCES += src/dsp/engine/FilterRouter.cpp
-SOURCES += src/dsp/engine/DualFilterEngine.cpp
-SOURCES += src/dsp/filters/SVF.cpp
-SOURCES += src/dsp/filters/TransistorLadder.cpp
-SOURCES += src/dsp/filters/CombFilter.cpp
-SOURCES += src/dsp/filters/BiquadFilter.cpp
-SOURCES += src/dsp/filters/WaspFilter.cpp
-SOURCES += src/dsp/filters/PhaserFilter.cpp
-SOURCES += src/dsp/filters/DiodeLadder.cpp
-SOURCES += src/dsp/filters/LPG.cpp
+SOURCES += src/platform/vcv/SaturationModule.cpp
+SOURCES += src/platform/vcv/SaturationWidget.cpp
+SOURCES += src/platform/daisy/DaisySaturationAdapter.cpp
+SOURCES += src/dsp/engine/SaturationEngine.cpp
+SOURCES += src/dsp/saturation/SoftAsymSaturator.cpp
+SOURCES += src/dsp/saturation/DiodeSaturator.cpp
+SOURCES += src/dsp/saturation/TubeishSaturator.cpp
+SOURCES += src/dsp/saturation/TapeishSaturator.cpp
 
 DISTRIBUTABLES += $(wildcard LICENSE*) res README.md SETUP.md BUILD_AND_RUN.md ARCHITECTURE.md KNOWN_ISSUES.md TEST_CHECKLIST.md NEW_CHAT_PROMPT.md docs
 

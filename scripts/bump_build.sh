@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 PLUGIN_JSON="$ROOT_DIR/plugin.json"
-HEADER_FILE="$ROOT_DIR/src/platform/vcv/DualFilterModule.h"
+HEADER_FILE="$ROOT_DIR/src/platform/vcv/SaturationModule.h"
 
 current_version="$(sed -nE 's/^[[:space:]]*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' "$PLUGIN_JSON" | head -n 1)"
 next_build=1
