@@ -12,18 +12,16 @@ using namespace rack;
 DualFilterModule::DualFilterModule() {
     config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
-    configSwitch(MODEL_A_PARAM, 0.0f, 5.0f, 0.0f, "Model A", {"SVF", "Trans Ladder", "Diode Ladder", "LPG", "Comb", "Biquad"});
-    configSwitch(MODEL_B_PARAM, 0.0f, 5.0f, 1.0f, "Model B", {"SVF", "Trans Ladder", "Diode Ladder", "LPG", "Comb", "Biquad"});
+    configSwitch(MODEL_A_PARAM, 0.0f, 6.0f, 1.0f, "Model A", {"OFF", "SVF", "Trans Ladder", "Diode Ladder", "LPG", "Comb", "Biquad"});
+    configSwitch(MODEL_B_PARAM, 0.0f, 6.0f, 2.0f, "Model B", {"OFF", "SVF", "Trans Ladder", "Diode Ladder", "LPG", "Comb", "Biquad"});
     configSwitch(ROUTING_PARAM, 0.0f, 2.0f, 0.0f, "Routing", {"Dual", "Serial", "Parallel"});
 
-    configSwitch(A_BYPASS_PARAM, 0.0f, 1.0f, 0.0f, "Bypass A", {"Off", "On"});
     configSwitch(A_MODE_PARAM, 0.0f, 4.0f, 0.0f, "Mode A");
     configParam(A_CUTOFF_PARAM, 0.0f, 1.0f, 0.5f, "A cutoff");
     configParam(A_RESONANCE_PARAM, 0.0f, 1.0f, 0.1f, "A resonance");
     configParam(A_DRIVE_PARAM, 0.1f, 3.0f, 1.0f, "A drive");
     configParam(A_MIX_PARAM, 0.0f, 1.0f, 1.0f, "A mix");
 
-    configSwitch(B_BYPASS_PARAM, 0.0f, 1.0f, 0.0f, "Bypass B", {"Off", "On"});
     configSwitch(B_MODE_PARAM, 0.0f, 4.0f, 0.0f, "Mode B");
     configParam(B_CUTOFF_PARAM, 0.0f, 1.0f, 0.5f, "B cutoff");
     configParam(B_RESONANCE_PARAM, 0.0f, 1.0f, 0.1f, "B resonance");
@@ -146,9 +144,9 @@ dsp::filters::FilterSlotParams DualFilterModule::BuildSlotParams(bool a) {
 
     const int driveParam = a ? A_DRIVE_PARAM : B_DRIVE_PARAM;
     const int mixParam = a ? A_MIX_PARAM : B_MIX_PARAM;
-    const int bypassParam = a ? A_BYPASS_PARAM : B_BYPASS_PARAM;
 
-    const int modelIndex = ClampInt(static_cast<int>(std::round(params[modelParam].getValue())), 0, 5);
+    const int modelIndex = ClampInt(static_cast<int>(std::round(params[modelParam].getValue())), 0, 6);
+    const int mappedModel = std::max(0, modelIndex - 1);
     const int modeIndex = ClampInt(static_cast<int>(std::round(params[modeParam].getValue())), 0, 4);
 
     const float cutoffNorm = getModulatedRangeValue(cutoffParam, cutoffCv, cutoffDepth, 0.0f, 1.0f);
@@ -159,7 +157,7 @@ dsp::filters::FilterSlotParams DualFilterModule::BuildSlotParams(bool a) {
     p.common.drive = params[driveParam].getValue();
     p.common.mix = params[mixParam].getValue();
     p.common.level = 1.0f;
-    p.bypass = params[bypassParam].getValue() > 0.5f;
+    p.bypass = (modelIndex == 0);
 
     // Model-specific mapping with explicit semantics (instead of opaque p1/p2 knobs on UI).
     p.model.p1 = 0.0f;
@@ -167,7 +165,7 @@ dsp::filters::FilterSlotParams DualFilterModule::BuildSlotParams(bool a) {
     p.model.p3 = 0.5f;
     p.model.p4 = 0.0f;
 
-    switch (static_cast<dsp::filters::FilterModelType>(modelIndex)) {
+    switch (static_cast<dsp::filters::FilterModelType>(mappedModel)) {
     case dsp::filters::FilterModelType::SVF:
         p.model.mode = ClampInt(modeIndex, 0, 3); // LP/HP/BP/NOTCH
         break;
@@ -197,14 +195,16 @@ dsp::filters::FilterSlotParams DualFilterModule::BuildSlotParams(bool a) {
 }
 
 void DualFilterModule::SyncParamsFromUi() {
-    const int aModelIndex = ClampInt(static_cast<int>(std::round(params[MODEL_A_PARAM].getValue())), 0, 5);
-    const int bModelIndex = ClampInt(static_cast<int>(std::round(params[MODEL_B_PARAM].getValue())), 0, 5);
+    const int aModelIndex = ClampInt(static_cast<int>(std::round(params[MODEL_A_PARAM].getValue())), 0, 6);
+    const int bModelIndex = ClampInt(static_cast<int>(std::round(params[MODEL_B_PARAM].getValue())), 0, 6);
 
     const int routingIndex = ClampInt(static_cast<int>(std::round(params[ROUTING_PARAM].getValue())), 0, 2);
+    const int mappedModelA = std::max(0, aModelIndex - 1);
+    const int mappedModelB = std::max(0, bModelIndex - 1);
 
     engine_.SetEngineRouting(static_cast<dsp::filters::EngineRoutingMode>(routingIndex));
-    engine_.SetSlotModel(dsp::engine::DualFilterEngine::SlotId::A, static_cast<dsp::filters::FilterModelType>(aModelIndex));
-    engine_.SetSlotModel(dsp::engine::DualFilterEngine::SlotId::B, static_cast<dsp::filters::FilterModelType>(bModelIndex));
+    engine_.SetSlotModel(dsp::engine::DualFilterEngine::SlotId::A, static_cast<dsp::filters::FilterModelType>(mappedModelA));
+    engine_.SetSlotModel(dsp::engine::DualFilterEngine::SlotId::B, static_cast<dsp::filters::FilterModelType>(mappedModelB));
 
     engine_.SetSlotParams(dsp::engine::DualFilterEngine::SlotId::A, BuildSlotParams(true));
     engine_.SetSlotParams(dsp::engine::DualFilterEngine::SlotId::B, BuildSlotParams(false));

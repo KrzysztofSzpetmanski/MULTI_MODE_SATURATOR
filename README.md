@@ -13,6 +13,8 @@ Modularny system filtrów z architekturą warstwową:
 - `SERIAL` i `PARALLEL`:
   - biorą sygnał z `IN A` lub `IN B` (albo merge obu),
   - dają sklonowany wynik na `OUT A` i `OUT B`.
+- Bypass nie ma osobnych przełączników:
+  - wyłączenie slotu robi się przez `MODEL = OFF` w dropdownie.
 - Testowy moduł VCV: `Dual Filter Lab`.
 - Layout I/O:
   - osobne `IN A`, `IN B` po lewej,

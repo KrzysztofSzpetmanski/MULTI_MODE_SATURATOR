@@ -9,21 +9,19 @@ namespace mmf::platform::vcv {
 
 class DualFilterModule : public rack::Module {
   public:
-    static constexpr int kBuildNumber = 10;
+    static constexpr int kBuildNumber = 11;
 
     enum ParamIds {
         MODEL_A_PARAM,
         MODEL_B_PARAM,
         ROUTING_PARAM,
 
-        A_BYPASS_PARAM,
         A_MODE_PARAM,
         A_CUTOFF_PARAM,
         A_RESONANCE_PARAM,
         A_DRIVE_PARAM,
         A_MIX_PARAM,
 
-        B_BYPASS_PARAM,
         B_MODE_PARAM,
         B_CUTOFF_PARAM,
         B_RESONANCE_PARAM,
