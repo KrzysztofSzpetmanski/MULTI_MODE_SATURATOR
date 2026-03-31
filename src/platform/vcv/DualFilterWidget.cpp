@@ -10,8 +10,8 @@ namespace {
 
 using namespace rack;
 
-static const std::array<std::string, 7> kModelLabels = {
-    "OFF", "SVF", "TR LAD", "DI LAD", "LPG", "COMB", "BIQ"
+static const std::array<std::string, 9> kModelLabels = {
+    "OFF", "SVF", "TR LAD", "DI LAD", "LPG", "COMB", "BIQ", "WASP", "PHAS"
 };
 
 static const std::array<std::string, 3> kRoutingLabels = {
@@ -23,6 +23,8 @@ static const std::array<std::string, 4> kModeLadder = {"LP 1P", "LP 2P", "LP 3P"
 static const std::array<std::string, 3> kModeLpg = {"LPG", "VCA", "LP"};
 static const std::array<std::string, 3> kModeComb = {"FF COMB", "FB COMB", "LP-FB COMB"};
 static const std::array<std::string, 5> kModeBiquad = {"LP", "HP", "BP", "NOTCH", "PEAK"};
+static const std::array<std::string, 3> kModeWasp = {"LP", "BP", "HP"};
+static const std::array<std::string, 3> kModePhaser = {"4 STG", "6 STG", "8 STG"};
 
 static const std::array<int, 14> kDepthMenuSteps = {
     0, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100
@@ -42,8 +44,13 @@ static std::vector<std::string> GetModeLabelsForModel(int modelIdx) {
     case 5:
         return {kModeComb.begin(), kModeComb.end()};
     case 6:
-    default:
         return {kModeBiquad.begin(), kModeBiquad.end()};
+    case 7:
+        return {kModeWasp.begin(), kModeWasp.end()};
+    case 8:
+        return {kModePhaser.begin(), kModePhaser.end()};
+    default:
+        return {"OFF"};
     }
 }
 
@@ -61,8 +68,13 @@ static std::array<std::string, 4> GetControlBaseLabelsForModel(int modelIdx) {
     case 5: // Comb
         return {"DLY", "FDBK", "DAMP", "MIX"};
     case 6: // Biquad
-    default:
         return {"CUT", "Q", "DRV", "MIX"};
+    case 7: // Wasp
+        return {"CUT", "RES", "DRV", "MIX"};
+    case 8: // Phaser
+        return {"RATE", "DEPTH", "FDBK", "MIX"};
+    default:
+        return {"OFF", "", "", ""};
     }
 }
 
@@ -105,7 +117,7 @@ struct DynamicControlLabel : TransparentWidget {
             modelIdx = rack::math::clamp(
                 static_cast<int>(std::round(moduleRef->params[modelParam].getValue())),
                 0,
-                6);
+                8);
         }
 
         const auto base = GetControlBaseLabelsForModel(modelIdx);
@@ -179,7 +191,7 @@ struct ModelChoice : CompactChoice {
 
     void step() override {
         if (module && paramId >= 0) {
-            const int idx = rack::math::clamp(static_cast<int>(std::round(module->params[paramId].getValue())), 0, 6);
+            const int idx = rack::math::clamp(static_cast<int>(std::round(module->params[paramId].getValue())), 0, 8);
             text = kModelLabels[idx];
         }
         CompactChoice::step();
@@ -256,7 +268,7 @@ struct ModeChoice : CompactChoice {
 
     void step() override {
         if (module) {
-            const int modelIdx = rack::math::clamp(static_cast<int>(std::round(module->params[getModelParam()].getValue())), 0, 6);
+            const int modelIdx = rack::math::clamp(static_cast<int>(std::round(module->params[getModelParam()].getValue())), 0, 8);
             const auto labels = GetModeLabelsForModel(modelIdx);
             const int modeIdx = rack::math::clamp(static_cast<int>(std::round(module->params[getModeParam()].getValue())),
                                                   0,
@@ -271,7 +283,7 @@ struct ModeChoice : CompactChoice {
             return;
         }
 
-        const int modelIdx = rack::math::clamp(static_cast<int>(std::round(module->params[getModelParam()].getValue())), 0, 6);
+        const int modelIdx = rack::math::clamp(static_cast<int>(std::round(module->params[getModelParam()].getValue())), 0, 8);
         const auto labels = GetModeLabelsForModel(modelIdx);
         ui::Menu* menu = createMenu();
         menu->addChild(createMenuLabel(slotA ? "Mode A" : "Mode B"));

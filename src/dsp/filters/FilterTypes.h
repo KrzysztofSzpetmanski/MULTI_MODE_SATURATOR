@@ -9,6 +9,8 @@ enum class FilterModelType {
     LPG = 3,
     Comb = 4,
     Biquad = 5,
+    Wasp = 6,
+    Phaser = 7,
 };
 
 enum class FilterRouting {
@@ -49,6 +51,18 @@ enum class BiquadMode {
     BP = 2,
     NOTCH = 3,
     PEAK = 4,
+};
+
+enum class WaspMode {
+    LP = 0,
+    BP = 1,
+    HP = 2,
+};
+
+enum class PhaserStagesMode {
+    STAGES_4 = 0,
+    STAGES_6 = 1,
+    STAGES_8 = 2,
 };
 
 enum class LpgMode {

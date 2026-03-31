@@ -10,6 +10,8 @@ void FilterSlot::Init(float sampleRate) {
     lpg_.Init(sampleRate_);
     comb_.Init(sampleRate_);
     biquad_.Init(sampleRate_);
+    wasp_.Init(sampleRate_);
+    phaser_.Init(sampleRate_);
     PushParamsToActiveModel();
 }
 
@@ -21,6 +23,8 @@ void FilterSlot::SetSampleRate(float sampleRate) {
     lpg_.SetSampleRate(sampleRate_);
     comb_.SetSampleRate(sampleRate_);
     biquad_.SetSampleRate(sampleRate_);
+    wasp_.SetSampleRate(sampleRate_);
+    phaser_.SetSampleRate(sampleRate_);
 }
 
 void FilterSlot::Reset() {
@@ -30,6 +34,8 @@ void FilterSlot::Reset() {
     lpg_.Reset();
     comb_.Reset();
     biquad_.Reset();
+    wasp_.Reset();
+    phaser_.Reset();
 }
 
 void FilterSlot::SetModel(filters::FilterModelType model) {
@@ -63,6 +69,12 @@ void FilterSlot::PushParamsToActiveModel() {
     case filters::FilterModelType::Biquad:
         biquad_.SetParams(params_);
         break;
+    case filters::FilterModelType::Wasp:
+        wasp_.SetParams(params_);
+        break;
+    case filters::FilterModelType::Phaser:
+        phaser_.SetParams(params_);
+        break;
     }
 }
 
@@ -84,6 +96,10 @@ float FilterSlot::ProcessSample(float x) {
         return comb_.Process(x);
     case filters::FilterModelType::Biquad:
         return biquad_.Process(x);
+    case filters::FilterModelType::Wasp:
+        return wasp_.Process(x);
+    case filters::FilterModelType::Phaser:
+        return phaser_.Process(x);
     }
     return x;
 }

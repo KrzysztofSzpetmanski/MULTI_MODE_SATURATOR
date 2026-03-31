@@ -6,8 +6,10 @@
 #include "../filters/FilterParams.h"
 #include "../filters/FilterTypes.h"
 #include "../filters/LPG.h"
+#include "../filters/PhaserFilter.h"
 #include "../filters/SVF.h"
 #include "../filters/TransistorLadder.h"
+#include "../filters/WaspFilter.h"
 
 namespace mmf::dsp::engine {
 
@@ -42,6 +44,8 @@ class FilterSlot {
     filters::LPG lpg_;
     filters::CombFilter comb_;
     filters::BiquadFilter biquad_;
+    filters::WaspFilter wasp_;
+    filters::PhaserFilter phaser_;
 };
 
 } // namespace mmf::dsp::engine

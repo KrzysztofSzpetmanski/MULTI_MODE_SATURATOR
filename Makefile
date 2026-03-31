@@ -39,6 +39,8 @@ SOURCES += src/dsp/filters/SVF.cpp
 SOURCES += src/dsp/filters/TransistorLadder.cpp
 SOURCES += src/dsp/filters/CombFilter.cpp
 SOURCES += src/dsp/filters/BiquadFilter.cpp
+SOURCES += src/dsp/filters/WaspFilter.cpp
+SOURCES += src/dsp/filters/PhaserFilter.cpp
 SOURCES += src/dsp/filters/DiodeLadder.cpp
 SOURCES += src/dsp/filters/LPG.cpp
 

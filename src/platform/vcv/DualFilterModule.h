@@ -9,7 +9,7 @@ namespace mmf::platform::vcv {
 
 class DualFilterModule : public rack::Module {
   public:
-    static constexpr int kBuildNumber = 19;
+    static constexpr int kBuildNumber = 21;
 
     enum ParamIds {
         MODEL_A_PARAM,

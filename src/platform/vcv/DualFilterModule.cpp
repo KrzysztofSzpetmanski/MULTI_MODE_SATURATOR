@@ -12,8 +12,8 @@ using namespace rack;
 DualFilterModule::DualFilterModule() {
     config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
-    configSwitch(MODEL_A_PARAM, 0.0f, 6.0f, 1.0f, "Model A", {"OFF", "SVF", "Trans Ladder", "Diode Ladder", "LPG", "Comb", "Biquad"});
-    configSwitch(MODEL_B_PARAM, 0.0f, 6.0f, 2.0f, "Model B", {"OFF", "SVF", "Trans Ladder", "Diode Ladder", "LPG", "Comb", "Biquad"});
+    configSwitch(MODEL_A_PARAM, 0.0f, 8.0f, 1.0f, "Model A", {"OFF", "SVF", "Trans Ladder", "Diode Ladder", "LPG", "Comb", "Biquad", "Wasp", "Phaser"});
+    configSwitch(MODEL_B_PARAM, 0.0f, 8.0f, 2.0f, "Model B", {"OFF", "SVF", "Trans Ladder", "Diode Ladder", "LPG", "Comb", "Biquad", "Wasp", "Phaser"});
     configSwitch(ROUTING_PARAM, 0.0f, 2.0f, 0.0f, "Routing", {"Dual", "Serial", "Parallel"});
 
     configSwitch(A_MODE_PARAM, 0.0f, 4.0f, 0.0f, "Mode A");
@@ -145,7 +145,7 @@ dsp::filters::FilterSlotParams DualFilterModule::BuildSlotParams(bool a) {
     const int driveParam = a ? A_DRIVE_PARAM : B_DRIVE_PARAM;
     const int mixParam = a ? A_MIX_PARAM : B_MIX_PARAM;
 
-    const int modelIndex = ClampInt(static_cast<int>(std::round(params[modelParam].getValue())), 0, 6);
+    const int modelIndex = ClampInt(static_cast<int>(std::round(params[modelParam].getValue())), 0, 8);
     const int mappedModel = std::max(0, modelIndex - 1);
     const int modeIndex = ClampInt(static_cast<int>(std::round(params[modeParam].getValue())), 0, 4);
 
@@ -189,14 +189,32 @@ dsp::filters::FilterSlotParams DualFilterModule::BuildSlotParams(bool a) {
         p.model.mode = ClampInt(modeIndex, 0, 4); // LP/HP/BP/NOTCH/PEAK
         p.model.p1 = 0.5f;
         break;
+    case dsp::filters::FilterModelType::Wasp: {
+        p.model.mode = ClampInt(modeIndex, 0, 2); // LP/BP/HP
+        const float driveNorm = ClampNorm((p.common.drive - 0.1f) / 2.9f);
+        p.model.p1 = ClampNorm(0.15f + 0.6f * driveNorm + 0.4f * p.common.resonance); // dirt / cmosCharacter
+        p.model.p2 = ClampNorm(0.2f + 0.8f * p.common.resonance);                       // reserved for future OTA/bias law
+        break;
+    }
+    case dsp::filters::FilterModelType::Phaser: {
+        // Phaser parameter map:
+        // cutoff knob/CV -> rate, resonance knob/CV -> depth, drive knob -> feedback, mix knob -> mix.
+        p.model.mode = ClampInt(modeIndex, 0, 2); // 4/6/8 stages
+        const float driveNorm = ClampNorm((p.common.drive - 0.1f) / 2.9f);
+        p.model.p1 = 0.03f + cutoffNorm * 7.97f; // rate Hz: 0.03 .. 8.0
+        p.model.p2 = p.common.resonance;         // depth: 0 .. 1
+        p.model.p3 = 0.9f * driveNorm;           // feedback: 0 .. 0.9
+        p.model.p4 = 0.25f;                      // stage spread (fixed for now)
+        break;
+    }
     }
 
     return p;
 }
 
 void DualFilterModule::SyncParamsFromUi() {
-    const int aModelIndex = ClampInt(static_cast<int>(std::round(params[MODEL_A_PARAM].getValue())), 0, 6);
-    const int bModelIndex = ClampInt(static_cast<int>(std::round(params[MODEL_B_PARAM].getValue())), 0, 6);
+    const int aModelIndex = ClampInt(static_cast<int>(std::round(params[MODEL_A_PARAM].getValue())), 0, 8);
+    const int bModelIndex = ClampInt(static_cast<int>(std::round(params[MODEL_B_PARAM].getValue())), 0, 8);
 
     const int routingIndex = ClampInt(static_cast<int>(std::round(params[ROUTING_PARAM].getValue())), 0, 2);
     const int mappedModelA = std::max(0, aModelIndex - 1);
