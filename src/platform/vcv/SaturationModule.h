@@ -9,7 +9,7 @@ namespace mmf::platform::vcv {
 
 class SaturationModule : public rack::Module {
   public:
-    static constexpr int kBuildNumber = 27;
+    static constexpr int kBuildNumber = 31;
 
     enum class RoutingMode {
         DUAL = 0,

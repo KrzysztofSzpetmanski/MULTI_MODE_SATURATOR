@@ -432,96 +432,94 @@ DualFilterWidget::DualFilterWidget(DualFilterModule* module) {
     addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
     addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-    auto* routingChoice = createWidget<RoutingChoice>(mm2px(Vec(17.5f, 16.5f)));
+    auto* routingChoice = createWidget<RoutingChoice>(mm2px(Vec(17.5f, 12.5f)));
     routingChoice->box.size = mm2px(Vec(30.0f, 7.0f));
     routingChoice->module = module;
     addChild(routingChoice);
 
-    auto* modelAChoice = createWidget<ModelChoice>(mm2px(Vec(6.5f, 27.5f)));
-    modelAChoice->box.size = mm2px(Vec(22.0f, 7.0f));
+    auto* modelAChoice = createWidget<ModelChoice>(mm2px(Vec(5.5f, 24.0f)));
+    modelAChoice->box.size = mm2px(Vec(24.0f, 7.0f));
     modelAChoice->module = module;
     modelAChoice->paramId = DualFilterModule::MODEL_A_PARAM;
     addChild(modelAChoice);
 
-    auto* modelBChoice = createWidget<ModelChoice>(mm2px(Vec(36.5f, 27.5f)));
-    modelBChoice->box.size = mm2px(Vec(22.0f, 7.0f));
+    auto* modelBChoice = createWidget<ModelChoice>(mm2px(Vec(35.5f, 24.0f)));
+    modelBChoice->box.size = mm2px(Vec(24.0f, 7.0f));
     modelBChoice->module = module;
     modelBChoice->paramId = DualFilterModule::MODEL_B_PARAM;
     addChild(modelBChoice);
 
-    auto* modeAChoice = createWidget<ModeChoice>(mm2px(Vec(6.5f, 36.5f)));
-    modeAChoice->box.size = mm2px(Vec(22.0f, 7.0f));
+    auto* modeAChoice = createWidget<ModeChoice>(mm2px(Vec(5.5f, 33.0f)));
+    modeAChoice->box.size = mm2px(Vec(24.0f, 7.0f));
     modeAChoice->module = module;
     modeAChoice->slotA = true;
     addChild(modeAChoice);
 
-    auto* modeBChoice = createWidget<ModeChoice>(mm2px(Vec(36.5f, 36.5f)));
-    modeBChoice->box.size = mm2px(Vec(22.0f, 7.0f));
+    auto* modeBChoice = createWidget<ModeChoice>(mm2px(Vec(35.5f, 33.0f)));
+    modeBChoice->box.size = mm2px(Vec(24.0f, 7.0f));
     modeBChoice->module = module;
     modeBChoice->slotA = false;
     addChild(modeBChoice);
 
-    // 4 symmetric columns across 65mm panel:
-    // col1: CV A, col2: knobs A, col3: knobs B, col4: CV B
-    const float col1 = 10.0f;
-    const float col2 = 25.0f;
-    const float col3 = 40.0f;
-    const float col4 = 55.0f;
+    const float colCvA = 10.0f;
+    const float colKnobA = 25.0f;
+    const float colKnobB = 40.0f;
+    const float colCvB = 55.0f;
 
-    const float rowCut = 54.0f;
-    const float rowRes = 66.0f;
-    const float rowDrv = 78.0f;
-    const float rowMix = 90.0f;
+    const float rowCut = 53.0f;
+    const float rowRes = 68.0f;
+    const float rowDrv = 83.0f;
+    const float rowMix = 98.0f;
 
-    auto* aCutoffKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(col2, rowCut)), module, DualFilterModule::A_CUTOFF_PARAM);
+    auto* aCutoffKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(colKnobA, rowCut)), module, DualFilterModule::A_CUTOFF_PARAM);
     aCutoffKnob->moduleRef = module;
     aCutoffKnob->depthParam = DualFilterModule::A_CUTOFF_CV_DEPTH_PARAM;
     aCutoffKnob->cvInput = DualFilterModule::A_CUTOFF_CV_INPUT;
     aCutoffKnob->depthMenuLabel = "A CUTOFF CV depth";
     addParam(aCutoffKnob);
 
-    auto* aResKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(col2, rowRes)), module, DualFilterModule::A_RESONANCE_PARAM);
+    auto* aResKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(colKnobA, rowRes)), module, DualFilterModule::A_RESONANCE_PARAM);
     aResKnob->moduleRef = module;
     aResKnob->depthParam = DualFilterModule::A_RESONANCE_CV_DEPTH_PARAM;
     aResKnob->cvInput = DualFilterModule::A_RESONANCE_CV_INPUT;
     aResKnob->depthMenuLabel = "A RESONANCE CV depth";
     addParam(aResKnob);
 
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(col2, rowDrv)), module, DualFilterModule::A_DRIVE_PARAM));
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(col2, rowMix)), module, DualFilterModule::A_MIX_PARAM));
+    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(colKnobA, rowDrv)), module, DualFilterModule::A_DRIVE_PARAM));
+    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(colKnobA, rowMix)), module, DualFilterModule::A_MIX_PARAM));
 
-    auto* bCutoffKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(col3, rowCut)), module, DualFilterModule::B_CUTOFF_PARAM);
+    auto* bCutoffKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(colKnobB, rowCut)), module, DualFilterModule::B_CUTOFF_PARAM);
     bCutoffKnob->moduleRef = module;
     bCutoffKnob->depthParam = DualFilterModule::B_CUTOFF_CV_DEPTH_PARAM;
     bCutoffKnob->cvInput = DualFilterModule::B_CUTOFF_CV_INPUT;
     bCutoffKnob->depthMenuLabel = "B CUTOFF CV depth";
     addParam(bCutoffKnob);
 
-    auto* bResKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(col3, rowRes)), module, DualFilterModule::B_RESONANCE_PARAM);
+    auto* bResKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(colKnobB, rowRes)), module, DualFilterModule::B_RESONANCE_PARAM);
     bResKnob->moduleRef = module;
     bResKnob->depthParam = DualFilterModule::B_RESONANCE_CV_DEPTH_PARAM;
     bResKnob->cvInput = DualFilterModule::B_RESONANCE_CV_INPUT;
     bResKnob->depthMenuLabel = "B RESONANCE CV depth";
     addParam(bResKnob);
 
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(col3, rowDrv)), module, DualFilterModule::B_DRIVE_PARAM));
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(col3, rowMix)), module, DualFilterModule::B_MIX_PARAM));
+    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(colKnobB, rowDrv)), module, DualFilterModule::B_DRIVE_PARAM));
+    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(colKnobB, rowMix)), module, DualFilterModule::B_MIX_PARAM));
 
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(col1, rowCut)), module, DualFilterModule::A_CUTOFF_CV_INPUT));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(col1, rowRes)), module, DualFilterModule::A_RESONANCE_CV_INPUT));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(col4, rowCut)), module, DualFilterModule::B_CUTOFF_CV_INPUT));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(col4, rowRes)), module, DualFilterModule::B_RESONANCE_CV_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(colCvA, rowCut)), module, DualFilterModule::A_CUTOFF_CV_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(colCvA, rowRes)), module, DualFilterModule::A_RESONANCE_CV_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(colCvB, rowCut)), module, DualFilterModule::B_CUTOFF_CV_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(colCvB, rowRes)), module, DualFilterModule::B_RESONANCE_CV_INPUT));
 
-    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(col1 + 4.2f, rowCut)), module, DualFilterModule::A_CUTOFF_MOD_LIGHT));
-    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(col1 + 4.2f, rowRes)), module, DualFilterModule::A_RESONANCE_MOD_LIGHT));
-    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(col4 - 4.2f, rowCut)), module, DualFilterModule::B_CUTOFF_MOD_LIGHT));
-    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(col4 - 4.2f, rowRes)), module, DualFilterModule::B_RESONANCE_MOD_LIGHT));
+    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(colCvA + 4.2f, rowCut)), module, DualFilterModule::A_CUTOFF_MOD_LIGHT));
+    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(colCvA + 4.2f, rowRes)), module, DualFilterModule::A_RESONANCE_MOD_LIGHT));
+    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(colCvB - 4.2f, rowCut)), module, DualFilterModule::B_CUTOFF_MOD_LIGHT));
+    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(colCvB - 4.2f, rowRes)), module, DualFilterModule::B_RESONANCE_MOD_LIGHT));
 
-    const float ioY = 109.0f;
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(col1, ioY)), module, DualFilterModule::AUDIO_A_INPUT));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(col2, ioY)), module, DualFilterModule::AUDIO_B_INPUT));
-    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(col3, ioY)), module, DualFilterModule::AUDIO_A_OUTPUT));
-    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(col4, ioY)), module, DualFilterModule::AUDIO_B_OUTPUT));
+    const float ioY = 113.0f;
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(colCvA, ioY)), module, DualFilterModule::AUDIO_A_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(colKnobA, ioY)), module, DualFilterModule::AUDIO_B_INPUT));
+    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(colKnobB, ioY)), module, DualFilterModule::AUDIO_A_OUTPUT));
+    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(colCvB, ioY)), module, DualFilterModule::AUDIO_B_OUTPUT));
 
     auto addPanelLabel = [this](float xMm, float yMm, const std::string& txt, int size = 7, NVGcolor color = nvgRGB(0x0f, 0x17, 0x2a)) {
         auto* l = createWidget<PanelLabel>(mm2px(Vec(xMm, yMm)));
@@ -531,8 +529,8 @@ DualFilterWidget::DualFilterWidget(DualFilterModule* module) {
         addChild(l);
     };
 
-    addPanelLabel(32.5f, 8.0f, "DUAL FILTER LAB", 9, nvgRGB(0x0b, 0x12, 0x20));
-    addPanelLabel(32.5f, 12.8f, rack::string::f("BUILD %d", DualFilterModule::kBuildNumber), 7, nvgRGB(0x1f, 0x29, 0x37));
+    addPanelLabel(33.0f, 8.0f, "DUAL FILTER LAB", 9, nvgRGB(0x0b, 0x12, 0x20));
+    addPanelLabel(55.0f, 10.0f, rack::string::f("BUILD %d", DualFilterModule::kBuildNumber), 7, nvgRGB(0x1f, 0x29, 0x37));
 
     addPanelLabel(10.0f, 22.5f, "A", 11);
     addPanelLabel(55.0f, 22.5f, "B", 11);
@@ -547,29 +545,29 @@ DualFilterWidget::DualFilterWidget(DualFilterModule* module) {
         addChild(l);
     };
 
-    addDynamicControlLabel(col1, 49.0f, true, 0, true, 6);
-    addDynamicControlLabel(col2, 49.0f, true, 0, false, 6);
-    addDynamicControlLabel(col3, 49.0f, false, 0, false, 6);
-    addDynamicControlLabel(col4, 49.0f, false, 0, true, 6);
+    addDynamicControlLabel(colCvA, 46.0f, true, 0, true, 6);
+    addDynamicControlLabel(colKnobA, 46.0f, true, 0, false, 6);
+    addDynamicControlLabel(colKnobB, 46.0f, false, 0, false, 6);
+    addDynamicControlLabel(colCvB, 46.0f, false, 0, true, 6);
 
-    addDynamicControlLabel(col1, 61.0f, true, 1, true, 6);
-    addDynamicControlLabel(col2, 61.0f, true, 1, false, 6);
-    addDynamicControlLabel(col3, 61.0f, false, 1, false, 6);
-    addDynamicControlLabel(col4, 61.0f, false, 1, true, 6);
+    addDynamicControlLabel(colCvA, 61.0f, true, 1, true, 6);
+    addDynamicControlLabel(colKnobA, 61.0f, true, 1, false, 6);
+    addDynamicControlLabel(colKnobB, 61.0f, false, 1, false, 6);
+    addDynamicControlLabel(colCvB, 61.0f, false, 1, true, 6);
 
-    addDynamicControlLabel(col2, 73.0f, true, 2, false, 6);
-    addDynamicControlLabel(col3, 73.0f, false, 2, false, 6);
-    addDynamicControlLabel(col2, 85.0f, true, 3, false, 6);
-    addDynamicControlLabel(col3, 85.0f, false, 3, false, 6);
+    addDynamicControlLabel(colKnobA, 76.0f, true, 2, false, 6);
+    addDynamicControlLabel(colKnobB, 76.0f, false, 2, false, 6);
+    addDynamicControlLabel(colKnobA, 91.0f, true, 3, false, 6);
+    addDynamicControlLabel(colKnobB, 91.0f, false, 3, false, 6);
 
-    addPanelLabel(32.5f, 102.0f, "I/O", 7);
-    addPanelLabel(col1, 116.0f, "IN A", 6);
-    addPanelLabel(col2, 116.0f, "IN B", 6);
-    addPanelLabel(col3, 116.0f, "OUT A", 6);
-    addPanelLabel(col4, 116.0f, "OUT B", 6);
+    addPanelLabel(33.0f, 106.0f, "I/O", 7);
+    addPanelLabel(colCvA, 121.0f, "IN A", 6);
+    addPanelLabel(colKnobA, 121.0f, "IN B", 6);
+    addPanelLabel(colKnobB, 121.0f, "OUT A", 6);
+    addPanelLabel(colCvB, 121.0f, "OUT B", 6);
 }
 
 } // namespace mmf::platform::vcv
 
 rack::Model* modelDualFilter = rack::createModel<mmf::platform::vcv::DualFilterModule,
-                                                  mmf::platform::vcv::DualFilterWidget>("DualFilterLab");
+                                                  mmf::platform::vcv::DualFilterWidget>("Dual_Filter_Lab");

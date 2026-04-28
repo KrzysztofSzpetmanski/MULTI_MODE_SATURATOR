@@ -406,96 +406,94 @@ SaturationWidget::SaturationWidget(SaturationModule* module) {
     addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
     addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-    auto* routingChoice = createWidget<RoutingChoice>(mm2px(Vec(17.5f, 16.5f)));
+    auto* routingChoice = createWidget<RoutingChoice>(mm2px(Vec(17.5f, 12.5f)));
     routingChoice->box.size = mm2px(Vec(30.0f, 7.0f));
     routingChoice->module = module;
     addChild(routingChoice);
 
-    auto* modelAChoice = createWidget<ModelChoice>(mm2px(Vec(6.5f, 27.5f)));
-    modelAChoice->box.size = mm2px(Vec(22.0f, 7.0f));
+    auto* modelAChoice = createWidget<ModelChoice>(mm2px(Vec(5.5f, 24.0f)));
+    modelAChoice->box.size = mm2px(Vec(24.0f, 7.0f));
     modelAChoice->module = module;
     modelAChoice->paramId = SaturationModule::MODEL_A_PARAM;
     addChild(modelAChoice);
 
-    auto* modelBChoice = createWidget<ModelChoice>(mm2px(Vec(36.5f, 27.5f)));
-    modelBChoice->box.size = mm2px(Vec(22.0f, 7.0f));
+    auto* modelBChoice = createWidget<ModelChoice>(mm2px(Vec(35.5f, 24.0f)));
+    modelBChoice->box.size = mm2px(Vec(24.0f, 7.0f));
     modelBChoice->module = module;
     modelBChoice->paramId = SaturationModule::MODEL_B_PARAM;
     addChild(modelBChoice);
 
-    auto* modeAChoice = createWidget<ModeChoice>(mm2px(Vec(6.5f, 36.5f)));
-    modeAChoice->box.size = mm2px(Vec(22.0f, 7.0f));
+    auto* modeAChoice = createWidget<ModeChoice>(mm2px(Vec(5.5f, 33.0f)));
+    modeAChoice->box.size = mm2px(Vec(24.0f, 7.0f));
     modeAChoice->module = module;
     modeAChoice->slotA = true;
     addChild(modeAChoice);
 
-    auto* modeBChoice = createWidget<ModeChoice>(mm2px(Vec(36.5f, 36.5f)));
-    modeBChoice->box.size = mm2px(Vec(22.0f, 7.0f));
+    auto* modeBChoice = createWidget<ModeChoice>(mm2px(Vec(35.5f, 33.0f)));
+    modeBChoice->box.size = mm2px(Vec(24.0f, 7.0f));
     modeBChoice->module = module;
     modeBChoice->slotA = false;
     addChild(modeBChoice);
 
-    // 4 symmetric columns across 65mm panel:
-    // col1: CV A, col2: knobs A, col3: knobs B, col4: CV B
-    const float col1 = 10.0f;
-    const float col2 = 25.0f;
-    const float col3 = 40.0f;
-    const float col4 = 55.0f;
+    const float colCvA = 10.0f;
+    const float colKnobA = 25.0f;
+    const float colKnobB = 40.0f;
+    const float colCvB = 55.0f;
 
-    const float rowCut = 54.0f;
-    const float rowRes = 66.0f;
-    const float rowDrv = 78.0f;
-    const float rowMix = 90.0f;
+    const float rowCut = 53.0f;
+    const float rowRes = 68.0f;
+    const float rowDrv = 83.0f;
+    const float rowMix = 98.0f;
 
-    auto* aCutoffKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(col2, rowCut)), module, SaturationModule::A_CUTOFF_PARAM);
+    auto* aCutoffKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(colKnobA, rowCut)), module, SaturationModule::A_CUTOFF_PARAM);
     aCutoffKnob->moduleRef = module;
     aCutoffKnob->depthParam = SaturationModule::A_CUTOFF_CV_DEPTH_PARAM;
     aCutoffKnob->cvInput = SaturationModule::A_CUTOFF_CV_INPUT;
     aCutoffKnob->depthMenuLabel = "A TONE CV depth";
     addParam(aCutoffKnob);
 
-    auto* aResKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(col2, rowRes)), module, SaturationModule::A_RESONANCE_PARAM);
+    auto* aResKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(colKnobA, rowRes)), module, SaturationModule::A_RESONANCE_PARAM);
     aResKnob->moduleRef = module;
     aResKnob->depthParam = SaturationModule::A_RESONANCE_CV_DEPTH_PARAM;
     aResKnob->cvInput = SaturationModule::A_RESONANCE_CV_INPUT;
     aResKnob->depthMenuLabel = "A BIAS CV depth";
     addParam(aResKnob);
 
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(col2, rowDrv)), module, SaturationModule::A_DRIVE_PARAM));
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(col2, rowMix)), module, SaturationModule::A_MIX_PARAM));
+    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(colKnobA, rowDrv)), module, SaturationModule::A_DRIVE_PARAM));
+    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(colKnobA, rowMix)), module, SaturationModule::A_MIX_PARAM));
 
-    auto* bCutoffKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(col3, rowCut)), module, SaturationModule::B_CUTOFF_PARAM);
+    auto* bCutoffKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(colKnobB, rowCut)), module, SaturationModule::B_CUTOFF_PARAM);
     bCutoffKnob->moduleRef = module;
     bCutoffKnob->depthParam = SaturationModule::B_CUTOFF_CV_DEPTH_PARAM;
     bCutoffKnob->cvInput = SaturationModule::B_CUTOFF_CV_INPUT;
     bCutoffKnob->depthMenuLabel = "B TONE CV depth";
     addParam(bCutoffKnob);
 
-    auto* bResKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(col3, rowRes)), module, SaturationModule::B_RESONANCE_PARAM);
+    auto* bResKnob = createParamCentered<CvDepthKnob>(mm2px(Vec(colKnobB, rowRes)), module, SaturationModule::B_RESONANCE_PARAM);
     bResKnob->moduleRef = module;
     bResKnob->depthParam = SaturationModule::B_RESONANCE_CV_DEPTH_PARAM;
     bResKnob->cvInput = SaturationModule::B_RESONANCE_CV_INPUT;
     bResKnob->depthMenuLabel = "B BIAS CV depth";
     addParam(bResKnob);
 
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(col3, rowDrv)), module, SaturationModule::B_DRIVE_PARAM));
-    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(col3, rowMix)), module, SaturationModule::B_MIX_PARAM));
+    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(colKnobB, rowDrv)), module, SaturationModule::B_DRIVE_PARAM));
+    addParam(createParamCentered<RoundSmallBlackKnob>(mm2px(Vec(colKnobB, rowMix)), module, SaturationModule::B_MIX_PARAM));
 
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(col1, rowCut)), module, SaturationModule::A_CUTOFF_CV_INPUT));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(col1, rowRes)), module, SaturationModule::A_RESONANCE_CV_INPUT));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(col4, rowCut)), module, SaturationModule::B_CUTOFF_CV_INPUT));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(col4, rowRes)), module, SaturationModule::B_RESONANCE_CV_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(colCvA, rowCut)), module, SaturationModule::A_CUTOFF_CV_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(colCvA, rowRes)), module, SaturationModule::A_RESONANCE_CV_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(colCvB, rowCut)), module, SaturationModule::B_CUTOFF_CV_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(colCvB, rowRes)), module, SaturationModule::B_RESONANCE_CV_INPUT));
 
-    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(col1 + 4.2f, rowCut)), module, SaturationModule::A_CUTOFF_MOD_LIGHT));
-    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(col1 + 4.2f, rowRes)), module, SaturationModule::A_RESONANCE_MOD_LIGHT));
-    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(col4 - 4.2f, rowCut)), module, SaturationModule::B_CUTOFF_MOD_LIGHT));
-    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(col4 - 4.2f, rowRes)), module, SaturationModule::B_RESONANCE_MOD_LIGHT));
+    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(colCvA + 7.2f, rowCut)), module, SaturationModule::A_CUTOFF_MOD_LIGHT));
+    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(colCvA + 7.2f, rowRes)), module, SaturationModule::A_RESONANCE_MOD_LIGHT));
+    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(colCvB - 7.2f, rowCut)), module, SaturationModule::B_CUTOFF_MOD_LIGHT));
+    addChild(createLightCentered<SmallLight<BlueLight>>(mm2px(Vec(colCvB - 7.2f, rowRes)), module, SaturationModule::B_RESONANCE_MOD_LIGHT));
 
-    const float ioY = 109.0f;
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(col1, ioY)), module, SaturationModule::AUDIO_A_INPUT));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(col2, ioY)), module, SaturationModule::AUDIO_B_INPUT));
-    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(col3, ioY)), module, SaturationModule::AUDIO_A_OUTPUT));
-    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(col4, ioY)), module, SaturationModule::AUDIO_B_OUTPUT));
+    const float ioY = 113.0f;
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(colCvA, ioY)), module, SaturationModule::AUDIO_A_INPUT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(colKnobA, ioY)), module, SaturationModule::AUDIO_B_INPUT));
+    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(colKnobB, ioY)), module, SaturationModule::AUDIO_A_OUTPUT));
+    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(colCvB, ioY)), module, SaturationModule::AUDIO_B_OUTPUT));
 
     auto addPanelLabel = [this](float xMm, float yMm, const std::string& txt, int size = 7, NVGcolor color = nvgRGB(0x0f, 0x17, 0x2a)) {
         auto* l = createWidget<PanelLabel>(mm2px(Vec(xMm, yMm)));
@@ -505,13 +503,11 @@ SaturationWidget::SaturationWidget(SaturationModule* module) {
         addChild(l);
     };
 
-    addPanelLabel(32.5f, 8.0f, "DUAL SATURATOR LAB", 9, nvgRGB(0x0b, 0x12, 0x20));
-    addPanelLabel(32.5f, 12.8f, rack::string::f("BUILD %d", SaturationModule::kBuildNumber), 7, nvgRGB(0x1f, 0x29, 0x37));
+    addPanelLabel(33.0f, 8.0f, "DUAL SATURATOR LAB", 9, nvgRGB(0x0b, 0x12, 0x20));
+    addPanelLabel(55.0f, 10.0f, rack::string::f("BUILD %d", SaturationModule::kBuildNumber), 7, nvgRGB(0x1f, 0x29, 0x37));
 
-    addPanelLabel(10.0f, 22.5f, "A", 11);
-    addPanelLabel(55.0f, 22.5f, "B", 11);
-    addPanelLabel(17.5f, 35.0f, "OUT", 6);
-    addPanelLabel(47.5f, 35.0f, "OUT", 6);
+    addPanelLabel(10.0f, 16.0f, "A", 11);
+    addPanelLabel(55.0f, 16.0f, "B", 11);
 
     auto addDynamicControlLabel = [this, module](float xMm, float yMm, bool slotA, int controlIndex, bool cvLabel, int size = 6) {
         auto* l = createWidget<DynamicControlLabel>(mm2px(Vec(xMm, yMm)));
@@ -523,29 +519,29 @@ SaturationWidget::SaturationWidget(SaturationModule* module) {
         addChild(l);
     };
 
-    addDynamicControlLabel(col1, 49.0f, true, 0, true, 6);
-    addDynamicControlLabel(col2, 49.0f, true, 0, false, 6);
-    addDynamicControlLabel(col3, 49.0f, false, 0, false, 6);
-    addDynamicControlLabel(col4, 49.0f, false, 0, true, 6);
+    addDynamicControlLabel(colCvA, 46.0f, true, 0, true, 6);
+    addDynamicControlLabel(colKnobA, 46.0f, true, 0, false, 6);
+    addDynamicControlLabel(colKnobB, 46.0f, false, 0, false, 6);
+    addDynamicControlLabel(colCvB, 46.0f, false, 0, true, 6);
 
-    addDynamicControlLabel(col1, 61.0f, true, 1, true, 6);
-    addDynamicControlLabel(col2, 61.0f, true, 1, false, 6);
-    addDynamicControlLabel(col3, 61.0f, false, 1, false, 6);
-    addDynamicControlLabel(col4, 61.0f, false, 1, true, 6);
+    addDynamicControlLabel(colCvA, 61.0f, true, 1, true, 6);
+    addDynamicControlLabel(colKnobA, 61.0f, true, 1, false, 6);
+    addDynamicControlLabel(colKnobB, 61.0f, false, 1, false, 6);
+    addDynamicControlLabel(colCvB, 61.0f, false, 1, true, 6);
 
-    addDynamicControlLabel(col2, 73.0f, true, 2, false, 6);
-    addDynamicControlLabel(col3, 73.0f, false, 2, false, 6);
-    addDynamicControlLabel(col2, 85.0f, true, 3, false, 6);
-    addDynamicControlLabel(col3, 85.0f, false, 3, false, 6);
+    addDynamicControlLabel(colKnobA, 76.0f, true, 2, false, 6);
+    addDynamicControlLabel(colKnobB, 76.0f, false, 2, false, 6);
+    addDynamicControlLabel(colKnobA, 91.0f, true, 3, false, 6);
+    addDynamicControlLabel(colKnobB, 91.0f, false, 3, false, 6);
 
-    addPanelLabel(32.5f, 102.0f, "I/O", 7);
-    addPanelLabel(col1, 116.0f, "IN A", 6);
-    addPanelLabel(col2, 116.0f, "IN B", 6);
-    addPanelLabel(col3, 116.0f, "OUT A", 6);
-    addPanelLabel(col4, 116.0f, "OUT B", 6);
+    addPanelLabel(33.0f, 106.0f, "I/O", 7);
+    addPanelLabel(colCvA, 121.0f, "IN A", 6);
+    addPanelLabel(colKnobA, 121.0f, "IN B", 6);
+    addPanelLabel(colKnobB, 121.0f, "OUT A", 6);
+    addPanelLabel(colCvB, 121.0f, "OUT B", 6);
 }
 
 } // namespace mmf::platform::vcv
 
 rack::Model* modelDualSaturation = rack::createModel<mmf::platform::vcv::SaturationModule,
-                                                  mmf::platform::vcv::SaturationWidget>("DualSaturationLab");
+                                                  mmf::platform::vcv::SaturationWidget>("Dual_Saturation_Lab");

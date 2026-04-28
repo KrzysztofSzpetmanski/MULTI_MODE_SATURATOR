@@ -1,16 +1,19 @@
 {
-  "slug": "MultiModeSaturatorLab",
-  "name": "Multi Mode Saturator Lab",
-  "version": "2.0.027",
+  "slug": "Dual_Saturation_Lab",
+  "name": "Dual Saturation Lab",
+  "version": "2.0.031",
   "license": "MIT",
   "brand": "KSZ",
   "author": "KSZ",
   "modules": [
     {
-      "slug": "DualSaturationLab",
+      "slug": "Dual_Saturation_Lab",
       "name": "Dual Saturation Lab",
       "description": "Dual-slot saturation audition module",
-      "tags": ["Distortion", "Effect"]
+      "tags": [
+        "Distortion",
+        "Effect"
+      ]
     }
   ]
 }

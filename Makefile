@@ -3,7 +3,7 @@ ifeq ("$(wildcard $(RACK_DIR)/plugin.mk)","")
 RACK_DIR := /Users/lazuli/Documents/PROGRAMMING/TEENSY/KSZ_TEENSY_PLATFORMIO/Teensy_Chord_Gen/Rack-SDK
 endif
 
-PLUGIN_SLUG := MultiModeSaturatorLab
+PLUGIN_SLUG := Dual_Saturation_Lab
 LOCAL_RACK_PLUGIN_DIR ?= $(HOME)/Library/Application Support/Rack2/plugins-mac-arm64
 BIG_MAC_MOUNT_DIR ?= /Volumes/music
 BIG_MAC_RACK_SUBDIR ?= Library/Application Support/Rack2/plugins-mac-arm64
